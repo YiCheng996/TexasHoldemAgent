@@ -1,0 +1,162 @@
+2025-02-14 15:39:11,240 - GameState_76505b10-6025-4b88-bec1-7aac61cb0ef9 - INFO - Created new game with ID: 76505b10-6025-4b88-bec1-7aac61cb0ef9
+2025-02-14 15:39:11,241 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Created new game with ID: 74792ba6-90c5-433e-ba43-1a922fa21e0b
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - WARNING - Player player1 already in game
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Added player player4 at position 3
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - INFO - Added player player5 at position 4
+2025-02-14 15:39:11,242 - GameState_74792ba6-90c5-433e-ba43-1a922fa21e0b - WARNING - Cannot add player player6: game is full
+2025-02-14 15:39:11,243 - GameState_ff95b3a3-36ab-495f-9c65-27b147c69440 - INFO - Created new game with ID: ff95b3a3-36ab-495f-9c65-27b147c69440
+2025-02-14 15:39:11,243 - GameState_ff95b3a3-36ab-495f-9c65-27b147c69440 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,243 - GameState_ff95b3a3-36ab-495f-9c65-27b147c69440 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,244 - GameState_ff95b3a3-36ab-495f-9c65-27b147c69440 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,244 - GameState_ff95b3a3-36ab-495f-9c65-27b147c69440 - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,245 - GameState_fd9446de-bc86-4bb7-81cf-5260a5d17947 - INFO - Created new game with ID: fd9446de-bc86-4bb7-81cf-5260a5d17947
+2025-02-14 15:39:11,245 - GameState_fd9446de-bc86-4bb7-81cf-5260a5d17947 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,245 - GameState_fd9446de-bc86-4bb7-81cf-5260a5d17947 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,245 - GameState_fd9446de-bc86-4bb7-81cf-5260a5d17947 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,245 - GameState_fd9446de-bc86-4bb7-81cf-5260a5d17947 - INFO - Player player2 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,246 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Created new game with ID: d6fa3aca-812a-46fc-b6bd-9b1260679a20
+2025-02-14 15:39:11,246 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,246 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,246 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,247 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,247 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Player player2 performed action PlayerAction.CHECK with amount 0
+2025-02-14 15:39:11,247 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Player player3 performed action PlayerAction.RAISE with amount 50
+2025-02-14 15:39:11,247 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Player player2 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:39:11,247 - GameState_d6fa3aca-812a-46fc-b6bd-9b1260679a20 - INFO - Player player2 performed action PlayerAction.ALL_IN with amount 0
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - INFO - Created new game with ID: a6b345a2-386e-4993-a840-b73e66e161c3
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - ERROR - Invalid player_id: invalid_player
+2025-02-14 15:39:11,248 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,249 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - ERROR - Player player1 is not active
+2025-02-14 15:39:11,249 - GameState_a6b345a2-386e-4993-a840-b73e66e161c3 - ERROR - Player player2 does not have enough chips
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Created new game with ID: a6a3608f-6698-40dd-88a3-fd86a59a915c
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.PRE_FLOP
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.FLOP
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.TURN
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.RIVER
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.SHOWDOWN
+2025-02-14 15:39:11,250 - GameState_a6a3608f-6698-40dd-88a3-fd86a59a915c - INFO - Advanced game stage to GameStage.FINISHED
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Created new game with ID: 0c965f88-d9b9-4c45-ba78-415fc81b10e9
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Player player1 performed action PlayerAction.RAISE with amount 50
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Player player2 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Player player3 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Player player2 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,252 - GameState_0c965f88-d9b9-4c45-ba78-415fc81b10e9 - INFO - Player player3 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:39:11,253 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Created new game with ID: c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a
+2025-02-14 15:39:11,253 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - ERROR - Invalid raise amount: 10
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Player player1 performed action PlayerAction.RAISE with amount 20
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Player player2 performed action PlayerAction.RAISE with amount 40
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - ERROR - Invalid raise amount: 30
+2025-02-14 15:39:11,254 - GameState_c2b207c4-4f50-4bdf-bf2d-7dccd67ecf0a - INFO - Player player3 performed action PlayerAction.RAISE with amount 60
+2025-02-14 15:39:11,255 - GameState_78ec4303-3011-42b4-9e3b-f9fcfb5762a4 - INFO - Created new game with ID: 78ec4303-3011-42b4-9e3b-f9fcfb5762a4
+2025-02-14 15:39:11,255 - GameState_78ec4303-3011-42b4-9e3b-f9fcfb5762a4 - INFO - Added player player1 at position 0
+2025-02-14 15:39:11,255 - GameState_78ec4303-3011-42b4-9e3b-f9fcfb5762a4 - INFO - Added player player2 at position 1
+2025-02-14 15:39:11,255 - GameState_78ec4303-3011-42b4-9e3b-f9fcfb5762a4 - INFO - Added player player3 at position 2
+2025-02-14 15:39:11,255 - GameState_78ec4303-3011-42b4-9e3b-f9fcfb5762a4 - INFO - Player player1 performed action PlayerAction.RAISE with amount 100
+2025-02-14 15:41:13,827 - GameState_c12dc190-c306-463f-b476-5ae2f58d3a9f - INFO - Created new game with ID: c12dc190-c306-463f-b476-5ae2f58d3a9f
+2025-02-14 15:41:13,828 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Created new game with ID: f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - WARNING - Player player1 already in game
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Added player player4 at position 3
+2025-02-14 15:41:13,829 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - INFO - Added player player5 at position 4
+2025-02-14 15:41:13,831 - GameState_f22b8b95-5cdf-4faa-a2ab-2eb8883aa7ff - WARNING - Cannot add player player6: game is full
+2025-02-14 15:41:13,832 - GameState_6c795205-5836-4510-bd25-112f74f86d03 - INFO - Created new game with ID: 6c795205-5836-4510-bd25-112f74f86d03
+2025-02-14 15:41:13,832 - GameState_6c795205-5836-4510-bd25-112f74f86d03 - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,832 - GameState_6c795205-5836-4510-bd25-112f74f86d03 - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,832 - GameState_6c795205-5836-4510-bd25-112f74f86d03 - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,832 - GameState_6c795205-5836-4510-bd25-112f74f86d03 - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,834 - GameState_850695ca-6d58-4e76-92cd-992d955a9617 - INFO - Created new game with ID: 850695ca-6d58-4e76-92cd-992d955a9617
+2025-02-14 15:41:13,834 - GameState_850695ca-6d58-4e76-92cd-992d955a9617 - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,834 - GameState_850695ca-6d58-4e76-92cd-992d955a9617 - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,834 - GameState_850695ca-6d58-4e76-92cd-992d955a9617 - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,835 - GameState_850695ca-6d58-4e76-92cd-992d955a9617 - INFO - Player player2 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Created new game with ID: c03a8d5c-3738-4b2a-af79-62b9782f030a
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Player player2 performed action PlayerAction.CHECK with amount 0
+2025-02-14 15:41:13,836 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Player player3 performed action PlayerAction.RAISE with amount 50
+2025-02-14 15:41:13,837 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Player player2 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:41:13,837 - GameState_c03a8d5c-3738-4b2a-af79-62b9782f030a - INFO - Player player2 performed action PlayerAction.ALL_IN with amount 0
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - INFO - Created new game with ID: c8f7f211-ff92-4320-a121-5479691b5b6a
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - ERROR - Invalid player_id: invalid_player
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - INFO - Player player1 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - ERROR - Player player1 is not active
+2025-02-14 15:41:13,838 - GameState_c8f7f211-ff92-4320-a121-5479691b5b6a - ERROR - Player player2 does not have enough chips
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Created new game with ID: bf65122f-2db6-4dc4-ac54-698e3d02cd48
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.PRE_FLOP
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.FLOP
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.TURN
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.RIVER
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.SHOWDOWN
+2025-02-14 15:41:13,840 - GameState_bf65122f-2db6-4dc4-ac54-698e3d02cd48 - INFO - Advanced game stage to GameStage.FINISHED
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Created new game with ID: 540de8ad-1eeb-486e-8bad-188a6e5d2c07
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Player player1 performed action PlayerAction.RAISE with amount 50
+2025-02-14 15:41:13,842 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Player player2 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:41:13,843 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Player player3 performed action PlayerAction.CALL with amount 0
+2025-02-14 15:41:13,843 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Player player2 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,843 - GameState_540de8ad-1eeb-486e-8bad-188a6e5d2c07 - INFO - Player player3 performed action PlayerAction.FOLD with amount 0
+2025-02-14 15:41:13,843 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Created new game with ID: bdb274fc-d004-4c7e-aa33-91a9a677049a
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - ERROR - Invalid raise amount: 10
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Player player1 performed action PlayerAction.RAISE with amount 20
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Player player2 performed action PlayerAction.RAISE with amount 40
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - ERROR - Invalid raise amount: 30
+2025-02-14 15:41:13,844 - GameState_bdb274fc-d004-4c7e-aa33-91a9a677049a - INFO - Player player3 performed action PlayerAction.RAISE with amount 60
+2025-02-14 15:41:13,845 - GameState_e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c - INFO - Created new game with ID: e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c
+2025-02-14 15:41:13,845 - GameState_e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c - INFO - Added player player1 at position 0
+2025-02-14 15:41:13,846 - GameState_e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c - INFO - Added player player2 at position 1
+2025-02-14 15:41:13,846 - GameState_e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c - INFO - Added player player3 at position 2
+2025-02-14 15:41:13,846 - GameState_e66aa9b4-d3ef-4934-8f6e-fd7b34677c0c - INFO - Player player1 performed action PlayerAction.RAISE with amount 100
+2025-02-14 15:42:40,411 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,412 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,413 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,414 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,415 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,415 - src.engine.dealer - INFO - Dealt hole cards to 3 players
+2025-02-14 15:42:40,416 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,416 - src.engine.dealer - INFO - Dealt 3 community cards: ['4♥', '5♦', '5♠']
+2025-02-14 15:42:40,416 - src.engine.dealer - INFO - Dealt 1 community cards: ['10♠']
+2025-02-14 15:42:40,416 - src.engine.dealer - INFO - Dealt 1 community cards: ['A♦']
+2025-02-14 15:42:40,417 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,417 - src.engine.dealer - ERROR - No cards left to deal
+2025-02-14 15:42:40,417 - src.engine.dealer - ERROR - No cards left to burn
+2025-02-14 15:42:40,418 - src.engine.dealer - ERROR - Not enough cards for 1 players
+2025-02-14 15:42:40,418 - src.engine.dealer - ERROR - Not enough cards to deal 1 community cards
+2025-02-14 15:42:40,418 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,418 - src.engine.dealer - INFO - Dealt hole cards to 2 players
+2025-02-14 15:42:40,419 - src.engine.dealer - INFO - Dealt 3 community cards: ['9♥', '2♥', '9♣']
+2025-02-14 15:42:40,419 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,419 - src.engine.dealer - INFO - Deck has been reset and shuffled
+2025-02-14 15:42:40,420 - src.engine.dealer - INFO - Dealt hole cards to 2 players
+2025-02-14 15:42:40,420 - src.engine.dealer - INFO - Dealt 3 community cards: ['Q♥', 'A♣', '4♣']
+2025-02-14 15:42:40,420 - src.engine.dealer - INFO - Dealt 1 community cards: ['3♠']
+2025-02-14 15:42:40,420 - src.engine.dealer - INFO - Dealt 1 community cards: ['9♦']

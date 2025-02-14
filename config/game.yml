@@ -1,0 +1,38 @@
+# 游戏基础设置
+game:
+  max_players: 5
+  initial_chips: 1000
+  small_blind: 10
+  big_blind: 20
+  min_raise: 20
+  max_raise: 1000
+  time_limit: 30  # 玩家决策时间限制（秒）
+
+# 回合设置
+rounds:
+  pre_flop:
+    time_limit: 30
+  flop:
+    time_limit: 30
+  turn:
+    time_limit: 30
+  river:
+    time_limit: 30
+
+# 服务器设置
+server:
+  host: "localhost"
+  port: 8000
+  debug: true
+  websocket_path: "/ws"
+
+# 数据库设置
+database:
+  url: "sqlite:///data/poker.db"
+  echo: false  # SQL语句日志
+
+# 日志设置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "data/poker.log"

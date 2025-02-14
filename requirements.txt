@@ -1,0 +1,14 @@
+fastapi>=0.104.1
+uvicorn>=0.24.0
+litellm>=1.10.1
+chromadb>=0.4.18
+pydantic>=2.5.2
+python-dotenv>=1.0.0
+websockets>=12.0
+SQLAlchemy>=2.0.23
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+python-jose>=3.3.0
+passlib>=1.7.4
+bcrypt>=4.0.1
+python-multipart>=0.0.6
