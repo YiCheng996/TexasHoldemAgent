@@ -14,10 +14,11 @@ A multi-player Texas Hold'em poker system based on large language models, suppor
 
 - AI智能体系统 / AI Agent System
   - 基于LiteLLM的多模型支持 (https://docs.litellm.ai/docs/) / Multi-model support via LiteLLM
-  - 短期/长期记忆管理 / Short/Long-term memory management
-  - 基于ChromaDB的向量存储 / Vector storage with ChromaDB
+  - 支持多个模型之间的对局 / Support for games between multiple models
   - 可配置的AI性格特征 / Configurable AI personalities
   - 实时决策分析 / Real-time decision analysis
+  - 短期&长期记忆管理（开发中） / Short&Long-term memory management(developing)
+  - 基于ChromaDB的向量存储 / Vector storage with ChromaDB
 
 - 实时Web界面 / Real-time Web Interface
   - WebSocket实时通信 / WebSocket communication
