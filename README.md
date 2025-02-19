@@ -91,16 +91,10 @@ memory（暂未实现应用/developing）:
 
 1. 启动后端 / Start backend：
 ```bash
-python src/api/main.py
+python src/web/server.py
 ```
 
-2. 启动前端 / Start frontend：
-```bash
-cd src/web
-npm run serve
-```
-
-3. 访问系统 / Access system：
+2. 访问系统 / Access system：
 ```
 http://localhost:8080
 ```
