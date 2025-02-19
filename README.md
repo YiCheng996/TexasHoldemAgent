@@ -13,7 +13,7 @@ A multi-player Texas Hold'em poker system based on large language models, suppor
   - 筹码管理和结算系统 / Chip management and settlement system
 
 - AI智能体系统 / AI Agent System
-  - 基于LiteLLM的多模型支持 / Multi-model support via LiteLLM
+  - 基于LiteLLM的多模型支持 (https://docs.litellm.ai/docs/) / Multi-model support via LiteLLM
   - 短期/长期记忆管理 / Short/Long-term memory management
   - 基于ChromaDB的向量存储 / Vector storage with ChromaDB
   - 可配置的AI性格特征 / Configurable AI personalities
@@ -42,7 +42,7 @@ A multi-player Texas Hold'em poker system based on large language models, suppor
 
 1. 克隆仓库 / Clone repository：
 ```bash
-git clone [repository-url]
+git clone https://github.com/YiCheng996/TexasHoldemAgent.git
 cd TexasHoldemAgent
 ```
 
@@ -51,20 +51,8 @@ cd TexasHoldemAgent
 # 后端依赖 / Backend dependencies
 pip install -r requirements.txt
 
-# 前端依赖 / Frontend dependencies
-cd src/web
-npm install
-```
 
-3. 配置文件设置 / Configuration：
-- 复制配置模板 / Copy configuration templates:
-```bash
-cp config/game.example.yml config/game.yml
-cp config/llm.example.yml config/llm.yml
-cp .env.example .env
-```
-
-- 修改配置文件 / Edit configurations:
+3. 修改配置文件 / Edit configurations:
   - `.env`: 环境变量 / Environment variables
   - `config/game.yml`: 游戏配置 / Game settings
   - `config/llm.yml`: AI配置 / AI settings
@@ -91,7 +79,7 @@ llm:
   model: "gpt-3.5-turbo"     # 模型名称 / Model name
   temperature: 0.7           # 温度参数 / Temperature
 
-memory:
+memory（暂未实现应用/developing）:
   short_term:
     max_rounds: 10           # 短期记忆回合数 / Short-term memory rounds
   long_term:
@@ -116,19 +104,7 @@ npm run serve
 http://localhost:8080
 ```
 
-## 开发指南 / Development Guide
 
-1. 运行测试 / Run tests：
-```bash
-pytest                    # 运行所有测试 / Run all tests
-pytest tests/test_game.py # 运行特定测试 / Run specific test
-```
-
-2. 代码检查 / Code check：
-```bash
-flake8                   # 代码风格检查 / Style check
-mypy src                 # 类型检查 / Type check
-```
 
 ## 许可证 / License
 
