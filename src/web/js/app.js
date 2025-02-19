@@ -220,9 +220,9 @@ function updatePlayers() {
     
     if (!gameState.players || gameState.players.length === 0) {
         console.log('没有玩家数据');
-        return;
-    }
-    
+                return;
+            }
+            
     console.log('更新玩家显示:', gameState.players);
     
     // 计算每个玩家的位置
@@ -256,7 +256,7 @@ function updatePlayers() {
     });
 }
 
-// 计算玩家位置
+        // 计算玩家位置
 function calculatePlayerPositions(numPlayers) {
     const positions = [];
     
@@ -314,13 +314,9 @@ function handleAction(action) {
     
     try {
         const message = {
-            type: 'action',
-            data: {
-                player_id: 'player_0',
-                action_type: action,
-                amount: action === 'RAISE' ? parseInt(elements.raiseAmount.value) : 0,
-                timestamp: new Date().toISOString()
-            }
+            player_id: 'player_0',
+            action: action,
+            amount: action === 'RAISE' ? parseInt(elements.raiseAmount.value) : 0
         };
         
         console.log('发送动作:', message);
@@ -391,7 +387,7 @@ function handleRaise() {
     const amount = parseInt(elements.raiseAmount.value);
     const currentPlayer = gameState.players.find(p => p.id === 'player_0');
     
-    if (!currentPlayer) {
+                if (!currentPlayer) {
         showError('无法获取玩家信息');
         return;
     }
@@ -404,18 +400,18 @@ function handleRaise() {
     
     if (amount > currentPlayer.chips) {
         showError('加注金额不能超过当前筹码');
-        return;
+                        return;
     }
     
     if (amount < gameState.minRaise) {
         showError(`加注金额不能小于最小加注额 ${gameState.minRaise}`);
-        return;
-    }
+                return;
+            }
     
     if (gameState.maxRaise && amount > gameState.maxRaise) {
         showError(`加注金额不能超过最大加注额 ${gameState.maxRaise}`);
-        return;
-    }
+                return;
+            }
     
     handleAction('RAISE');
     hideRaiseDialog();
