@@ -1,17 +1,17 @@
 # AI玩家配置
 ai_players:
   ai_1:
-    model: "openai/glm-4-plus"
-    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
-    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    model: "anthropic/claude-3-sonnet-20240229"
+    api_key: "your api key"
+    base_url: "your base url"
     temperature: 0.8
     max_tokens: 10000
     timeout: 30
     description: ""
     
-  ai_2:
+  ai_2: # 可以使用兼容openai格式的任何大模型（zhipu，tongyi，deepseek）
     model: "openai/glm-4-plus"
-    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
+    api_key: "your api key"
     base_url: "https://open.bigmodel.cn/api/paas/v4/"
     temperature: 0.5
     max_tokens: 15000
@@ -19,17 +19,17 @@ ai_players:
     description: ""
   
   ai_3:
-    model: "openai/glm-4-plus"
-    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
-    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    model: "openai/gpt-4o"
+    api_key: "your api key"
+    base_url: "your base url"
     temperature: 0.5
     max_tokens: 15000
     timeout: 30
   
   ai_4:
-    model: "openai/glm-4-plus"
-    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
-    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    model: "openai/qwen-max"
+    api_key: "your api key"
+    base_url: "your base url"
     temperature: 0.5
     max_tokens: 15000
     timeout: 30
