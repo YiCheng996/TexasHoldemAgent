@@ -1,86 +1,141 @@
-# 德州扑克多智能体系统
+# 德州扑克多智能体系统 / Texas Holdem Multi-Agent System
 
-基于大语言模型的多人德州扑克游戏系统，支持AI与人类玩家共同参与。
+基于大语言模型的多人德州扑克游戏系统，支持AI与人类玩家共同参与的学术研究项目。
 
-## 功能特点
+A multi-player Texas Hold'em poker system based on large language models, supporting both AI and human players for academic research.
 
-- 支持5人局德州扑克游戏
-- 基于LiteLLM的多模型AI玩家
-- 实时游戏界面
-- 完整的游戏记录和分析
-- AI玩家行为分析和策略学习
+## 功能特点 / Features
 
-## 系统要求
+- 完整的德州扑克引擎 / Complete Texas Hold'em Engine
+  - 支持5人局标准德州扑克规则 / Standard 5-player poker rules
+  - 完整的牌型判定系统 / Complete hand evaluation system
+  - 回合控制和状态管理 / Round control and state management
+  - 筹码管理和结算系统 / Chip management and settlement system
+
+- AI智能体系统 / AI Agent System
+  - 基于LiteLLM的多模型支持 / Multi-model support via LiteLLM
+  - 短期/长期记忆管理 / Short/Long-term memory management
+  - 基于ChromaDB的向量存储 / Vector storage with ChromaDB
+  - 可配置的AI性格特征 / Configurable AI personalities
+  - 实时决策分析 / Real-time decision analysis
+
+- 实时Web界面 / Real-time Web Interface
+  - WebSocket实时通信 / WebSocket communication
+  - 响应式设计 / Responsive design
+  - 游戏状态实时更新 / Real-time game state updates
+  - 玩家操作界面 / Player action interface
+
+- 数据分析功能 / Data Analysis
+  - 完整的游戏记录 / Complete game records
+  - AI行为分析 / AI behavior analysis
+  - 策略效果评估 / Strategy evaluation
+  - 玩家数据统计 / Player statistics
+
+## 系统要求 / Requirements
 
 - Python 3.9+
+- Node.js 14+ (前端开发 / Frontend development)
 - SQLite3
-- 支持的操作系统：Windows/Linux/MacOS
+- 支持的操作系统 / Supported OS: Windows/Linux/MacOS
 
-## 安装
+## 安装步骤 / Installation
 
-1. 克隆仓库：
+1. 克隆仓库 / Clone repository：
 ```bash
 git clone [repository-url]
 cd TexasHoldemAgent
 ```
 
-2. 安装依赖：
+2. 安装依赖 / Install dependencies：
 ```bash
+# 后端依赖 / Backend dependencies
 pip install -r requirements.txt
+
+# 前端依赖 / Frontend dependencies
+cd src/web
+npm install
 ```
 
-3. 配置环境变量：
-- 复制 `.env.example` 为 `.env`
-- 填写必要的配置信息（API密钥等）
+3. 配置文件设置 / Configuration：
+- 复制配置模板 / Copy configuration templates:
+```bash
+cp config/game.example.yml config/game.yml
+cp config/llm.example.yml config/llm.yml
+cp .env.example .env
+```
 
-## 使用方法
+- 修改配置文件 / Edit configurations:
+  - `.env`: 环境变量 / Environment variables
+  - `config/game.yml`: 游戏配置 / Game settings
+  - `config/llm.yml`: AI配置 / AI settings
 
-1. 启动服务器：
+## 配置说明 / Configuration Guide
+
+### 游戏配置 / Game Configuration (game.yml)
+```yaml
+game:
+  max_players: 5          # 最大玩家数 / Max players
+  initial_chips: 1000     # 初始筹码 / Starting chips
+  small_blind: 10         # 小盲注 / Small blind
+  big_blind: 20          # 大盲注 / Big blind
+
+server:
+  host: "localhost"      # 服务器地址 / Server host
+  port: 8000            # 端口 / Port
+```
+
+### AI配置 / AI Configuration (llm.yml)
+```yaml
+llm:
+  api_key: "your-api-key"    # API密钥 / API key
+  model: "gpt-3.5-turbo"     # 模型名称 / Model name
+  temperature: 0.7           # 温度参数 / Temperature
+
+memory:
+  short_term:
+    max_rounds: 10           # 短期记忆回合数 / Short-term memory rounds
+  long_term:
+    collection: "poker_memories"  # 向量存储集合名 / Vector storage collection
+```
+
+## 启动服务 / Start Services
+
+1. 启动后端 / Start backend：
 ```bash
 python src/api/main.py
 ```
 
-2. 访问Web界面：
-```
-http://localhost:8000
-```
-
-## 项目结构
-
-```
-TexasHoldemAgent/
-├── src/                 # 源代码
-│   ├── engine/         # 游戏引擎
-│   ├── agents/         # AI智能体
-│   ├── api/           # API服务
-│   ├── web/           # Web界面
-│   ├── db/            # 数据库
-│   └── utils/         # 工具函数
-├── config/            # 配置文件
-├── data/             # 数据存储
-├── docs/             # 项目文档
-│   ├── PRD.md        # 项目需求文档
-│   ├── rules.md      # 游戏规则说明
-│   └── scratchpad.md # 开发记录
-└── tests/            # 测试用例
-```
-
-## 开发
-
-1. 运行测试：
+2. 启动前端 / Start frontend：
 ```bash
-pytest
+cd src/web
+npm run serve
 ```
 
-2. 代码风格检查：
+3. 访问系统 / Access system：
+```
+http://localhost:8080
+```
+
+## 开发指南 / Development Guide
+
+1. 运行测试 / Run tests：
 ```bash
-flake8
+pytest                    # 运行所有测试 / Run all tests
+pytest tests/test_game.py # 运行特定测试 / Run specific test
 ```
 
-## 许可证
+2. 代码检查 / Code check：
+```bash
+flake8                   # 代码风格检查 / Style check
+mypy src                 # 类型检查 / Type check
+```
 
-[License Type] - 查看 LICENSE 文件了解更多信息。
+## 许可证 / License
 
-## 贡献
+MIT License - 查看 [LICENSE](LICENSE) 文件了解更多信息。
+See [LICENSE](LICENSE) file for details.
+
+## 贡献 / Contributing
 
 欢迎提交问题和拉取请求。
+Issues and pull requests are welcome.
