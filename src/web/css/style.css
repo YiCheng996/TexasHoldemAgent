@@ -1,0 +1,669 @@
+/* 全局样式 */
+:root {
+    --primary-color: #1989fa;
+    --background-color: #f5f7fa;
+    --text-color: #303133;
+    --border-color: #dcdfe6;
+    --table-color: #2c3e50;
+    --table-green: #35654d;
+    --card-width: 70px;
+    --card-height: 100px;
+    --border-radius: 8px;
+}
+
+/* 重置样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* 布局容器 */
+.el-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部样式 */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+/* 主要内容区域 */
+main {
+    padding: 1rem;
+}
+
+/* 游戏信息 */
+.game-info {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.game-info span {
+    background-color: rgba(255,255,255,0.1);
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* 扑克桌样式 */
+.poker-table {
+    background-color: #2d8653;
+    border-radius: 100px;
+    padding: 2rem;
+    margin: 1rem auto;
+    position: relative;
+    width: 80%;
+    max-width: 1200px;
+    min-height: 680px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 公共牌区域 */
+.community-cards-area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.community-cards {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.flop-cards {
+    display: flex;
+    gap: 10px;
+}
+
+.turn-card, .river-card {
+    margin-left: 20px;
+}
+
+.cards {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.card-container {
+    width: 70px;
+    height: 100px;
+    perspective: 1000px;
+    margin: 0.25rem;
+}
+
+.card-container:not(.revealed) {
+    background: #2c3e50;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 24px;
+    cursor: not-allowed;
+}
+
+.card-container.revealed {
+    transform: rotateY(0deg);
+}
+
+.card {
+    width: 50px;
+    height: 70px;
+    background-color: white;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card-rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.card-suit {
+    font-size: 1.5rem;
+}
+
+.card-suit.hearts, .card-suit.diamonds {
+    color: #e74c3c;
+}
+
+.card-suit.spades, .card-suit.clubs {
+    color: #2c3e50;
+}
+
+.card-placeholder {
+    width: 50px;
+    height: 70px;
+    background-color: #1a4d31;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.pot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+}
+
+/* 玩家区域 */
+.players {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.player-seat {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 1rem;
+    min-width: 150px;
+    text-align: center;
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.player-seat.active {
+    box-shadow: 0 0 15px #ffd700;
+    border: 2px solid #ffd700;
+}
+
+.player-seat.inactive {
+    opacity: 0.5;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.player-name {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 0.5rem;
+}
+
+.player-chips {
+    color: #90EE90;
+}
+
+.player-bet {
+    color: #FFD700;
+}
+
+.player-total-bet {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffd700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-bet-label {
+    color: #ffffff;
+    font-size: 0.85em;
+}
+
+.total-bet-amount {
+    color: #ffd700;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* 在玩家激活状态下突出显示总下注 */
+.player-seat.active .player-total-bet {
+    background-color: rgba(0, 100, 0, 0.8);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+/* 在全下状态下的样式 */
+.player-seat.all-in .player-total-bet {
+    background-color: rgba(139, 0, 0, 0.8);
+}
+
+.player-all-in {
+    color: #FF4500;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+/* 底池显示 */
+.game-info span:nth-child(3) {  /* 底池信息 */
+    color: #FFD700;  /* 金色 */
+    font-weight: bold;
+}
+
+.player-cards {
+    display: flex;
+    flex-direction: row;  /* 确保横向排列 */
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    min-height: 110px;  /* 给予足够的高度 */
+}
+
+/* 玩家发言气泡 */
+.player-speech-bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 120px;
+    max-width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -60px;
+}
+
+.player-speech-bubble.active {
+    opacity: 1;
+    top: -70px;
+}
+
+.player-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+}
+
+.action-text {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.message-text {
+    color: #666;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 4px;
+    word-wrap: break-word;
+}
+
+/* 操作面板 */
+.action-panel {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem; /* 为状态消息栏留出空间 */
+    padding: 1rem;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 8px;
+}
+
+.action-panel button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.btn-fold {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-check {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-call {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-raise {
+    background-color: #f1c40f;
+    color: black;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 状态消息 */
+.status-message {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    z-index: 1000;
+    font-size: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 加注对话框 */
+.raise-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.raise-content {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    min-width: 300px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.raise-content h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #ffd700;
+}
+
+.raise-info {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+
+.raise-info p {
+    margin: 0.5rem 0;
+    color: #90EE90;
+}
+
+#raise-amount {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    background-color: #34495e;
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+#raise-amount:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+.raise-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.raise-buttons button {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.raise-buttons button:first-child {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.raise-buttons button:last-child {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.raise-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.raise-buttons button:active {
+    transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .poker-table {
+        width: 95%;
+        padding: 1rem;
+        border-radius: 50px;
+    }
+
+    .card-placeholder {
+        width: 60px;
+        height: 90px;
+    }
+
+    .game-info {
+        font-size: 0.9rem;
+    }
+}
+
+/* 获胜动画 */
+@keyframes winner-glow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        transform: scale(1.1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        transform: scale(1);
+    }
+}
+
+.player-seat.winner {
+    animation: winner-glow 1.5s ease-in-out infinite;
+    background-color: rgba(255, 215, 0, 0.2);
+    border: 2px solid gold;
+}
+
+.player-seat.winner .player-name {
+    color: gold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.player-seat.winner .player-chips {
+    color: #90EE90;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* 新一局按钮面板 */
+.new-game-panel {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    padding: 20px 30px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 15px;
+    z-index: 4;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.new-game-panel .el-button {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.new-game-panel .el-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+/* 性能优化 */
+.poker-table, .card, .player-seat {
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* 玩家位置样式 */
+.player-seat {
+    position: absolute;
+    transition: all 0.3s ease;
+}
+
+/* 左侧位置 */
+.player-seat.position-left {
+    left: 2%;
+    top: 40%;
+    transform: translate(0, -40%);
+}
+
+/* 右侧位置 */
+.player-seat.position-right {
+    right: 2%;
+    top: 40%;
+    transform: translate(0, -40%);
+}
+
+/* 底部右侧 */
+.player-seat.position-bottom-right {
+    bottom: 2%;
+    right: 15%;
+    transform: translate(0, 0);
+}
+
+/* 底部中间 */
+.player-seat.position-bottom-center {
+    bottom: 2%;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+/* 底部左侧 */
+.player-seat.position-bottom-left {
+    bottom: 2%;
+    left: 15%;
+    transform: translate(0, 0);
+}
+
+/* 修改玩家位置计算
+function calculatePlayerPositions(numPlayers) {
+    const positions = [];
+    
+    // 固定位置布局
+    const layoutPositions = [
+        // 左侧位置
+        'left: 2%; top: 50%; transform: translate(0, -50%);',
+        // 右侧位置
+        'right: 2%; top: 50%; transform: translate(0, -50%);',
+        // 底部右侧
+        'bottom: 2%; right: 15%; transform: translate(0, 0);',
+        // 底部中间
+        'bottom: 2%; left: 50%; transform: translate(-50%, 0);',
+        // 底部左侧
+        'bottom: 2%; left: 15%; transform: translate(0, 0);'
+    ];
+    
+    // 分配位置
+    orderedPlayers.forEach((player, index) => {
+        positions[index] = layoutPositions[index];
+    });
+    
+    return positions;
+} */ 

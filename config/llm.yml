@@ -1,0 +1,150 @@
+# AI玩家配置
+ai_players:
+  ai_1:
+    model: "openai/glm-4-plus"
+    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    temperature: 0.8
+    max_tokens: 10000
+    timeout: 30
+    description: ""
+    
+  ai_2:
+    model: "openai/glm-4-plus"
+    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    temperature: 0.5
+    max_tokens: 15000
+    timeout: 30
+    description: ""
+  
+  ai_3:
+    model: "openai/glm-4-plus"
+    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    temperature: 0.5
+    max_tokens: 15000
+    timeout: 30
+  
+  ai_4:
+    model: "openai/glm-4-plus"
+    api_key: "95285665986d43ad84eeeb3506e1150d.USTAijnoWSy6ADHc"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    temperature: 0.5
+    max_tokens: 15000
+    timeout: 30
+# 提示词模板
+prompts:
+  # 决策制定提示词
+  decision_making: |
+    你是一个德州扑克AI玩家。{historical_context}。请根据当前游戏状态和历史信息，按照你的性格特征做出决策。
+    
+    游戏规则说明:
+    1. 可用动作类型:
+       - FOLD (弃牌): 放弃当前手牌，退出本轮游戏
+       - CHECK (过牌): 不加注，保持当前下注额（仅当无人加注时可用）
+       - CALL (跟注): 跟随当前最大注额
+       - RAISE (加注): 将注额提高到指定数量，如果选择加注，必须至少是当前最大注的两倍，加注金额不能超过玩家剩余筹码。
+       - ALL_IN (全下): 押上所有剩余筹码，当筹码不足以加注时，可以选择全下来进行加注。
+    
+    2. 加注规则:
+       - 加注金额必须大于当前最大注额
+       - 加注金额必须至少是最小加注额
+       - 加注金额不能超过玩家剩余筹码
+       - 如果筹码不足以满足最小加注要求，只能选择 FOLD 或 ALL_IN
+    
+    3. 行动限制:
+       - 每个玩家每轮只能行动一次
+       - 必须按照顺时针顺序行动
+       - 如果前面有人加注，不能选择过牌
+       - 跟注或加注的金额必须精确匹配要求
+    
+    当前状态:
+    - 手牌: {hand_cards}
+    - 公共牌: {community_cards}
+    - 当前阶段: {phase}
+    - 位置: {position}
+    - 底池: {pot_size}
+    - 当前最大注: {current_bet}
+    - 最小加注额: {min_raise} (这是你必须加注到的最小金额)
+    - 我的筹码: {chips}
+    
+    对手信息:
+    {opponents}
+    
+    本轮动作历史:
+    {round_actions}
+    
+    请记住你的性格特征，在做出决策时要体现出相应的风格。
+    
+    警告：这是一个严格的格式要求！
+    1. 你必须只返回一个原始的JSON对象
+    2. 禁止使用任何markdown标记（如```json）
+    3. 禁止在JSON前后添加任何其他字符
+    4. 禁止添加任何额外的换行或缩进
+    5. 违反以上任何一条都将导致解析错误
+    
+    直接返回以下格式的JSON:
+    {{
+      "action": {{
+        "type": "动作类型(FOLD/CHECK/CALL/RAISE/ALL_IN)",
+        "amount": "加注金额(如果选择加注，必须至少是当前最大注的两倍，加注金额不能超过玩家剩余筹码，如果筹码不足以满足最小加注要求，只能选择弃牌或全下)",
+        "confidence": "决策置信度(0-1)"
+      }},
+      "reasoning": {{
+        "hand_strength": "手牌强度分析",
+        "position_analysis": "位置分析",
+        "pot_odds": "底池赔率分析",
+        "opponent_reads": ["对手行为分析"]
+      }},
+      "table_talk": {{
+        "message": "发言内容",
+        "tone": "发言语气"
+      }}
+    }}
+    
+  # 回合总结提示词
+  round_summary: |
+    请总结本轮游戏的关键信息:
+    
+    牌局信息:
+    - 阶段: {phase}
+    - 手牌: {hand_cards}
+    - 公共牌: {community_cards}
+    - 最终底池: {pot_size}
+    - 获得筹码: {chips_won}
+    
+    玩家动作:
+    {player_actions}
+    
+    警告：这是一个严格的格式要求！
+    1. 你必须只返回一个原始的JSON对象
+    2. 禁止使用任何markdown标记（如```json）
+    3. 禁止在JSON前后添加任何其他字符
+    4. 禁止添加任何额外的换行或缩进
+    5. 违反以上任何一条都将导致解析错误
+    
+    直接返回以下格式的JSON:
+    {{
+      "analysis": {{
+        "strategy_patterns": ["策略模式分析"],
+        "key_decisions": ["关键决策分析"],
+        "improvements": ["改进建议"]
+      }},
+      "metadata": {{
+        "importance": "重要性评分(1-5)",
+        "tags": ["相关标签"]
+      }}
+    }} 
+# 记忆系统配置
+memory:
+  # 短期记忆配置
+  short_term:
+    max_rounds: 10
+    
+  # 长期记忆配置
+  long_term:
+    collection: "poker_memories"
+    max_results: 5
+    similarity_threshold: 0.8
+    pruning_days: 30

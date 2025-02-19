@@ -33,6 +33,51 @@ class HandResult:
     community_cards: List[str]    # 公共牌
     best_five: List[str]         # 最佳五张牌组合
     kickers: List[str]           # 踢脚牌
+    
+    def __lt__(self, other: 'HandResult') -> bool:
+        """小于比较"""
+        if self.rank.value != other.rank.value:
+            return self.rank.value < other.rank.value
+            
+        # 如果牌型相同，比较最佳五张牌
+        self_values = [HandEvaluator.get_rank_value(card) for card in self.best_five]
+        other_values = [HandEvaluator.get_rank_value(card) for card in other.best_five]
+        
+        # 从大到小比较每张牌
+        for sv, ov in zip(sorted(self_values, reverse=True), sorted(other_values, reverse=True)):
+            if sv != ov:
+                return sv < ov
+                
+        # 如果最佳五张牌相同，比较踢脚牌
+        self_kickers = [HandEvaluator.get_rank_value(card) for card in self.kickers]
+        other_kickers = [HandEvaluator.get_rank_value(card) for card in other.kickers]
+        
+        for sv, ov in zip(sorted(self_kickers, reverse=True), sorted(other_kickers, reverse=True)):
+            if sv != ov:
+                return sv < ov
+                
+        return False  # 完全相等返回 False
+        
+    def __eq__(self, other: 'HandResult') -> bool:
+        """相等比较"""
+        if not isinstance(other, HandResult):
+            return NotImplemented
+            
+        return (self.rank == other.rank and
+                sorted(self.best_five) == sorted(other.best_five) and
+                sorted(self.kickers) == sorted(other.kickers))
+                
+    def __le__(self, other: 'HandResult') -> bool:
+        """小于等于比较"""
+        return self < other or self == other
+        
+    def __gt__(self, other: 'HandResult') -> bool:
+        """大于比较"""
+        return not (self <= other)
+        
+    def __ge__(self, other: 'HandResult') -> bool:
+        """大于等于比较"""
+        return not (self < other)
 
 class HandEvaluator:
     """手牌评估器，负责判断牌型和比较大小"""
@@ -54,131 +99,92 @@ class HandEvaluator:
         return card[-1]
     
     @staticmethod
-    def evaluate_hand(hand_cards: List[str], community_cards: List[str]) -> HandResult:
+    def _get_best_hand(cards: List[str]) -> Tuple[HandRank, List[str], List[str]]:
         """
-        评估一手牌的牌型
+        从所有牌中找出最佳的牌型组合
         
         Args:
-            hand_cards: 两张手牌
-            community_cards: 公共牌（3-5张）
+            cards: 所有可用的牌
             
         Returns:
-            HandResult: 牌型判断结果
+            Tuple[HandRank, List[str], List[str]]: (牌型等级, 最佳五张牌, 踢脚牌)
         """
-        all_cards = hand_cards + community_cards
-        
-        # 检查同花顺（包括皇家同花顺）
-        flush_result = HandEvaluator._check_flush(all_cards)
-        if flush_result:
-            straight_result = HandEvaluator._check_straight(flush_result)
-            if straight_result:
-                if HandEvaluator.get_rank_value(straight_result[0]) == 14:
-                    return HandResult(
-                        HandRank.ROYAL_FLUSH,
-                        hand_cards,
-                        community_cards,
-                        straight_result,
-                        []
-                    )
-                return HandResult(
-                    HandRank.STRAIGHT_FLUSH,
-                    hand_cards,
-                    community_cards,
-                    straight_result,
-                    []
-                )
+        # 检查同花顺和皇家同花顺
+        flush_cards = HandEvaluator._check_flush(cards)
+        if flush_cards:
+            straight_flush = HandEvaluator._check_straight(flush_cards)
+            if straight_flush:
+                # 检查是否是皇家同花顺
+                if HandEvaluator.get_rank_value(straight_flush[0]) == 14:
+                    return HandRank.ROYAL_FLUSH, straight_flush, []
+                return HandRank.STRAIGHT_FLUSH, straight_flush, []
         
         # 检查四条
-        four_kind = HandEvaluator._check_four_of_a_kind(all_cards)
+        four_kind = HandEvaluator._check_four_of_a_kind(cards)
         if four_kind:
-            return HandResult(
-                HandRank.FOUR_OF_A_KIND,
-                hand_cards,
-                community_cards,
-                four_kind[0],
-                four_kind[1]
-            )
+            return HandRank.FOUR_OF_A_KIND, four_kind[0], four_kind[1]
         
         # 检查葫芦
-        full_house = HandEvaluator._check_full_house(all_cards)
+        full_house = HandEvaluator._check_full_house(cards)
         if full_house:
-            return HandResult(
-                HandRank.FULL_HOUSE,
-                hand_cards,
-                community_cards,
-                full_house,
-                []
-            )
+            return HandRank.FULL_HOUSE, full_house, []
         
         # 检查同花
-        if flush_result:
-            return HandResult(
-                HandRank.FLUSH,
-                hand_cards,
-                community_cards,
-                flush_result[:5],
-                []
-            )
+        if flush_cards:
+            return HandRank.FLUSH, flush_cards[:5], []
         
         # 检查顺子
-        straight = HandEvaluator._check_straight(all_cards)
+        straight = HandEvaluator._check_straight(cards)
         if straight:
-            # 确保不是因为重复牌导致的假顺子
-            values = [HandEvaluator.get_rank_value(card) for card in straight]
-            if len(set(values)) == 5:  # 确保五张牌的点数都不同
-                return HandResult(
-                    HandRank.STRAIGHT,
-                    hand_cards,
-                    community_cards,
-                    straight,
-                    []
-                )
+            return HandRank.STRAIGHT, straight, []
         
         # 检查三条
-        three_kind = HandEvaluator._check_three_of_a_kind(all_cards)
+        three_kind = HandEvaluator._check_three_of_a_kind(cards)
         if three_kind:
-            return HandResult(
-                HandRank.THREE_OF_A_KIND,
-                hand_cards,
-                community_cards,
-                three_kind[0],
-                three_kind[1]
-            )
+            return HandRank.THREE_OF_A_KIND, three_kind[0], three_kind[1]
         
         # 检查两对
-        two_pair = HandEvaluator._check_two_pair(all_cards)
+        two_pair = HandEvaluator._check_two_pair(cards)
         if two_pair:
-            return HandResult(
-                HandRank.TWO_PAIR,
-                hand_cards,
-                community_cards,
-                two_pair[0],
-                two_pair[1]
-            )
+            return HandRank.TWO_PAIR, two_pair[0], two_pair[1]
         
         # 检查一对
-        pair = HandEvaluator._check_pair(all_cards)
-        if pair:
-            return HandResult(
-                HandRank.PAIR,
-                hand_cards,
-                community_cards,
-                pair[0],
-                pair[1]
-            )
+        one_pair = HandEvaluator._check_pair(cards)
+        if one_pair:
+            return HandRank.PAIR, one_pair[0], one_pair[1]
         
         # 高牌
-        high_cards = sorted(
-            all_cards,
-            key=HandEvaluator.get_rank_value,
-            reverse=True
-        )
+        sorted_cards = sorted(cards, key=HandEvaluator.get_rank_value, reverse=True)
+        return HandRank.HIGH_CARD, sorted_cards[:5], []
+    
+    @staticmethod
+    def evaluate_hand(hand_cards: List[str], community_cards: List[str]) -> HandResult:
+        """
+        评估手牌和公共牌的组合，返回最佳牌型
+        
+        Args:
+            hand_cards: 手牌列表
+            community_cards: 公共牌列表
+            
+        Returns:
+            HandResult: 包含牌型等级、最佳五张牌组合和踢脚牌的结果对象
+        """
+        # 确保输入是列表类型
+        hand_cards = list(hand_cards) if isinstance(hand_cards, tuple) else hand_cards
+        community_cards = list(community_cards) if isinstance(community_cards, tuple) else community_cards
+        
+        # 组合所有牌
+        all_cards = hand_cards + community_cards
+        
+        # 获取最佳牌型
+        best_hand = HandEvaluator._get_best_hand(all_cards)
+        
         return HandResult(
-            HandRank.HIGH_CARD,
-            hand_cards,
-            community_cards,
-            high_cards[:5],
-            []
+            rank=best_hand[0],           # 牌型等级
+            hand_cards=hand_cards,       # 原始手牌
+            community_cards=community_cards,  # 公共牌
+            best_five=best_hand[1],      # 最佳五张牌组合
+            kickers=best_hand[2] if len(best_hand) > 2 else []  # 踢脚牌
         )
     
     @staticmethod

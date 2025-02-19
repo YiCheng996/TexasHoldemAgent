@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>德州扑克AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>德州扑克AI</h1>
+        <div class="game-info">
+            <span id="game-id">游戏ID: -</span>
+            <span id="game-phase">阶段: 翻牌前</span>
+            <span id="pot-size">底池: 0</span>
+            <span id="min-raise">最小加注: 0</span>
+            <span id="current-player">当前行动: -</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="poker-table">
+            <!-- 公共牌区域 -->
+            <div class="community-cards">
+                <div id="flop1" class="card-placeholder">?</div>
+                <div id="flop2" class="card-placeholder">?</div>
+                <div id="flop3" class="card-placeholder">?</div>
+                <div id="turn" class="card-placeholder">?</div>
+                <div id="river" class="card-placeholder">?</div>
+            </div>
+
+            <!-- 底池显示 -->
+            <div id="pot-display" class="pot">底池: 0</div>
+
+            <!-- 玩家座位 -->
+            <div id="players-container" class="players"></div>
+        </div>
+
+        <!-- 操作面板 -->
+        <div id="action-panel" class="action-panel" style="display: none;">
+            <button class="btn-fold" onclick="handleAction('FOLD')">弃牌</button>
+            <button class="btn-check" onclick="handleAction('CHECK')">过牌</button>
+            <button class="btn-call" onclick="handleAction('CALL')">跟注</button>
+            <button class="btn-raise" onclick="showRaiseDialog()">加注</button>
+        </div>
+
+        <!-- 状态消息 -->
+        <div id="status-message" class="status-message"></div>
+
+        <!-- 加注对话框 -->
+        <div id="raise-dialog" class="raise-dialog" style="display: none;">
+            <div class="raise-content">
+                <h3>请输入加注金额</h3>
+                <input type="number" id="raise-amount" min="0" step="1">
+                <div class="raise-buttons">
+                    <button onclick="handleRaise()">确认</button>
+                    <button onclick="hideRaiseDialog()">取消</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/app.js"></script>
+</body>
+</html> 

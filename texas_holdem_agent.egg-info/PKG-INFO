@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: texas_holdem_agent
-Version: 0.1.0
-Requires-Python: >=3.9
-Requires-Dist: pytest>=7.0.0
-Requires-Dist: pyyaml>=6.0.0
-Requires-Dist: sqlalchemy>=2.0.0

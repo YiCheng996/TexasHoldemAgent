@@ -22,6 +22,7 @@ class Dealer:
     deck: List[str] = field(default_factory=list)  # 牌堆
     dealt_cards: Set[str] = field(default_factory=set)  # 已发出的牌
     burnt_cards: List[str] = field(default_factory=list)  # 烧牌
+    community_cards: List[str] = field(default_factory=list)  # 公共牌
     
     def __post_init__(self):
         """初始化牌堆"""
@@ -33,6 +34,7 @@ class Dealer:
         self.deck = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
         self.dealt_cards.clear()
         self.burnt_cards.clear()
+        self.community_cards.clear()
         self.shuffle()
         self.logger.info("Deck has been reset and shuffled")
         
@@ -115,7 +117,9 @@ class Dealer:
         # 发指定数量的公共牌
         cards = []
         for _ in range(count):
-            cards.append(self.deal_card())
+            card = self.deal_card()
+            cards.append(card)
+            self.community_cards.append(card)
             
         self.logger.info(f"Dealt {count} community cards: {cards}")
         return cards

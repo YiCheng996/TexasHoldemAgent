@@ -340,4 +340,99 @@ def test_compare_same_flush():
         []
     )
     assert HandEvaluator.compare_hands(flush_ace, flush_king) == 1
-    assert HandEvaluator.compare_hands(flush_king, flush_ace) == -1 
+    assert HandEvaluator.compare_hands(flush_king, flush_ace) == -1
+
+def test_compare_same_rank_different_suits():
+    """测试相同牌型不同花色的比较"""
+    # 一对A，不同花色
+    pair_spades_hearts = HandResult(
+        HandRank.PAIR,
+        ['A♠', 'A♥'],
+        ['K♦', 'Q♣', 'J♥', '10♦', '9♠'],
+        ['A♠', 'A♥'],
+        ['K♦', 'Q♣', 'J♥']
+    )
+    pair_clubs_diamonds = HandResult(
+        HandRank.PAIR,
+        ['A♣', 'A♦'],
+        ['K♥', 'Q♠', 'J♣', '10♥', '9♦'],
+        ['A♣', 'A♦'],
+        ['K♥', 'Q♠', 'J♣']
+    )
+    assert HandEvaluator.compare_hands(pair_spades_hearts, pair_clubs_diamonds) == 0
+
+def test_compare_different_suits_with_kickers():
+    """测试不同花色但有相同踢脚牌的比较"""
+    # 两对AK，不同花色
+    two_pair1 = HandResult(
+        HandRank.TWO_PAIR,
+        ['A♠', 'A♥'],
+        ['K♦', 'K♣', 'Q♥', '3♦', '4♠'],
+        ['A♠', 'A♥', 'K♦', 'K♣'],
+        ['Q♥']
+    )
+    two_pair2 = HandResult(
+        HandRank.TWO_PAIR,
+        ['A♣', 'A♦'],
+        ['K♥', 'K♠', 'Q♥', '3♥', '4♦'],
+        ['A♣', 'A♦', 'K♥', 'K♠'],
+        ['Q♥']
+    )
+    assert HandEvaluator.compare_hands(two_pair1, two_pair2) == 0
+
+def test_compare_straight_different_suits():
+    """测试不同花色的顺子比较"""
+    # 10-A顺子，不同花色组合
+    straight1 = HandResult(
+        HandRank.STRAIGHT,
+        ['A♠', 'K♥'],
+        ['Q♦', 'J♣', '10♥', '2♦', '3♠'],
+        ['A♠', 'K♥', 'Q♦', 'J♣', '10♥'],
+        []
+    )
+    straight2 = HandResult(
+        HandRank.STRAIGHT,
+        ['A♣', 'K♦'],
+        ['Q♥', 'J♠', '10♣', '2♥', '3♦'],
+        ['A♣', 'K♦', 'Q♥', 'J♠', '10♣'],
+        []
+    )
+    assert HandEvaluator.compare_hands(straight1, straight2) == 0
+
+def test_compare_three_kind_different_suits():
+    """测试不同花色的三条比较"""
+    # 三条A，不同花色组合
+    three_kind1 = HandResult(
+        HandRank.THREE_OF_A_KIND,
+        ['A♠', 'A♥'],
+        ['A♦', 'K♣', 'Q♥', 'J♦', '10♠'],
+        ['A♠', 'A♥', 'A♦'],
+        ['K♣', 'Q♥']
+    )
+    three_kind2 = HandResult(
+        HandRank.THREE_OF_A_KIND,
+        ['A♣', 'A♦'],
+        ['A♥', 'K♠', 'Q♦', 'J♥', '10♣'],
+        ['A♣', 'A♦', 'A♥'],
+        ['K♠', 'Q♦']
+    )
+    assert HandEvaluator.compare_hands(three_kind1, three_kind2) == 0
+
+def test_compare_four_kind_different_suits():
+    """测试不同花色的四条比较"""
+    # 四条A，不同花色组合顺序
+    four_kind1 = HandResult(
+        HandRank.FOUR_OF_A_KIND,
+        ['A♠', 'A♥'],
+        ['A♦', 'A♣', 'K♠', 'Q♥', 'J♦'],
+        ['A♠', 'A♥', 'A♦', 'A♣'],
+        ['K♠']
+    )
+    four_kind2 = HandResult(
+        HandRank.FOUR_OF_A_KIND,
+        ['A♣', 'A♦'],
+        ['A♥', 'A♠', 'K♠', 'Q♥', 'J♦'],
+        ['A♣', 'A♦', 'A♥', 'A♠'],
+        ['K♠']
+    )
+    assert HandEvaluator.compare_hands(four_kind1, four_kind2) == 0 
