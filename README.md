@@ -3,6 +3,7 @@
 基于大语言模型的多人德州扑克游戏系统，支持AI与人类玩家共同参与的学术研究项目。
 
 A multi-player Texas Hold'em poker system based on large language models, supporting both AI and human players for academic research.
+![image](https://github.com/user-attachments/assets/0f3c3885-4f74-4fd1-996d-6f28b4f740c4)
 
 ## 功能特点 / Features
 
