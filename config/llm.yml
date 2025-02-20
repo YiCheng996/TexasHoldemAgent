@@ -2,17 +2,17 @@
 ai_players:
   ai_1:
     model: "openai/glm-4-air"
-    api_key: "af68d6c644c2498085eef8b3661c64ba.Y06iop1SB0K0SVL4"
-    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    api_key: "your api key"
+    base_url: "your base url"
     temperature: 0.8
     max_tokens: 10000
     timeout: 15
     description: ""
     
   ai_2:
-    model: "openai/glm-4-air"
-    api_key: "af68d6c644c2498085eef8b3661c64ba.Y06iop1SB0K0SVL4"
-    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    model: "openai/glm-4-plus"
+    api_key: "your api key"
+    base_url: "your base url"
     temperature: 0.5
     max_tokens: 15000
     timeout: 15
