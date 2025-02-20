@@ -698,9 +698,12 @@ function calculatePlayerPositions(numPlayers) {
 .result-content {
     background-color: #2c3e50;
     padding: 1.5rem;
+    padding: 1.5rem;
     border-radius: 10px;
     max-width: 500px;
+    max-width: 500px;
     width: 90%;
+    max-height: 80vh;
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -712,11 +715,16 @@ function calculatePlayerPositions(numPlayers) {
 
 .continue-btn {
     padding: 0.6rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     background-color: #2ecc71;
     color: white;
     border: none;
     border-radius: 4px;
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 1rem;
+    margin-top: 0.8rem;
+    width: 100%;
     font-size: 1rem;
     margin-top: 0.8rem;
     width: 100%;
@@ -726,10 +734,13 @@ function calculatePlayerPositions(numPlayers) {
 .game-result {
     color: white;
     padding: 10px;
+    padding: 10px;
 }
 
 .game-result h3 {
     color: #ffd700;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
     margin-bottom: 10px;
     font-size: 1.3rem;
 }
@@ -738,9 +749,14 @@ function calculatePlayerPositions(numPlayers) {
     color: #ddd;
     margin: 10px 0 5px;
     font-size: 1.1rem;
+    margin: 10px 0 5px;
+    font-size: 1.1rem;
 }
 
 .community-cards, .showdown-data {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
     margin: 10px 0;
     padding: 8px;
     border-radius: 6px;
@@ -749,7 +765,10 @@ function calculatePlayerPositions(numPlayers) {
 .player-hand {
     margin: 8px 0;
     padding: 8px;
+    margin: 8px 0;
+    padding: 8px;
     border: 1px solid #444;
+    border-radius: 4px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.1);
 }
@@ -765,16 +784,20 @@ function calculatePlayerPositions(numPlayers) {
     align-items: center;
     margin-bottom: 8px;
     font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
 }
 
 .hand-rank {
     color: #ffd700;
     font-style: italic;
     font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .cards {
     display: flex;
+    gap: 8px;
     gap: 8px;
     justify-content: center;
 }
