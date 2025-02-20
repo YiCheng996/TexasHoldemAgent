@@ -75,10 +75,24 @@ server:
 
 ### AI配置 / AI Configuration (llm.yml)
 ```yaml
-llm:
-  api_key: "your-api-key"    # API密钥 / API key
-  model: "gpt-3.5-turbo"     # 模型名称 / Model name
-  temperature: 0.7           # 温度参数 / Temperature
+ai_players:
+  ai_1:
+    model: "openai/glm-4-air"
+    api_key: "your-api-key"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
+    temperature: 0.8
+    max_tokens: 10000
+    timeout: 15
+    description: "*You expect the model's playing preferences, such as a preference for bluffing*"
+    
+  ai_2:
+    model: "openai/gpt-4o"
+    api_key: "your-api-key"
+    base_url: "your-api-base"
+    temperature: 0.5
+    max_tokens: 15000
+    timeout: 15
+    description: ""
 
 memory（暂未实现应用/developing）:
   short_term:
