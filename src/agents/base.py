@@ -80,6 +80,14 @@ class Agent(ABC):
         Returns:
             PlayerAction: 选择的动作
         """
+        if not self.current_observation:
+            raise ValueError("No observation available")
+            
+        # 检查游戏是否已结束
+        if self.current_observation.phase == "FINISHED":
+            logger.info(f"游戏已结束，AI玩家 {self.agent_id} 停止行动")
+            return None
+            
         raise NotImplementedError
     
     def reset(self) -> None:

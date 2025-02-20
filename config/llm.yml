@@ -1,21 +1,21 @@
 # AI玩家配置
 ai_players:
   ai_1:
-    model: "anthropic/claude-3-sonnet-20240229"
-    api_key: "your api key"
-    base_url: "your base url"
+    model: "openai/glm-4-air"
+    api_key: "af68d6c644c2498085eef8b3661c64ba.Y06iop1SB0K0SVL4"
+    base_url: "https://open.bigmodel.cn/api/paas/v4/"
     temperature: 0.8
     max_tokens: 10000
-    timeout: 30
+    timeout: 15
     description: ""
     
-  ai_2: # 可以使用兼容openai格式的任何大模型（zhipu，tongyi，deepseek）
-    model: "openai/glm-4-plus"
-    api_key: "your api key"
+  ai_2:
+    model: "openai/glm-4-air"
+    api_key: "af68d6c644c2498085eef8b3661c64ba.Y06iop1SB0K0SVL4"
     base_url: "https://open.bigmodel.cn/api/paas/v4/"
     temperature: 0.5
     max_tokens: 15000
-    timeout: 30
+    timeout: 15
     description: ""
   
   ai_3:
@@ -24,7 +24,7 @@ ai_players:
     base_url: "your base url"
     temperature: 0.5
     max_tokens: 15000
-    timeout: 30
+    timeout: 5
   
   ai_4:
     model: "openai/qwen-max"
@@ -32,7 +32,7 @@ ai_players:
     base_url: "your base url"
     temperature: 0.5
     max_tokens: 15000
-    timeout: 30
+    timeout: 5
 # 提示词模板
 prompts:
   # 决策制定提示词

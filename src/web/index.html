@@ -51,11 +51,24 @@
         <div id="raise-dialog" class="raise-dialog" style="display: none;">
             <div class="raise-content">
                 <h3>请输入加注金额</h3>
+                <div class="raise-info">
+                    <p>最小加注: <span id="min-raise-amount">0</span></p>
+                    <p>最大加注: <span id="max-raise-amount">0</span></p>
+                    <p>当前筹码: <span id="current-chips">0</span></p>
+                </div>
                 <input type="number" id="raise-amount" min="0" step="1">
                 <div class="raise-buttons">
                     <button onclick="handleRaise()">确认</button>
                     <button onclick="hideRaiseDialog()">取消</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- 修改结算弹窗 -->
+        <div id="result-dialog" class="game-result-dialog" style="display: none;">
+            <div class="result-content">
+                <div id="result-message" class="result-info"></div>
+                <button onclick="startNewGame()" class="continue-btn">继续游戏</button>
             </div>
         </div>
     </main>

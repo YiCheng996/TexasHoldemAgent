@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 class ConnectionManager:
     """WebSocket连接管理器"""
     
-    def __init__(self):
+    def __init__(self, config):
         """初始化连接管理器"""
         # 存储所有活动连接
         self.active_connections: Dict[str, Dict[str, WebSocket]] = {}
@@ -24,6 +24,7 @@ class ConnectionManager:
         self.game_connections: Dict[str, Set[str]] = {}
         # 存储ping任务
         self.ping_tasks: Dict[str, asyncio.Task] = {}
+        self.ping_interval = config.websocket.ping_interval
         
         logger.info("WebSocket连接管理器已初始化")
     
@@ -209,7 +210,7 @@ class ConnectionManager:
         }
         await self.broadcast(game_id, ping_message)
         
-    async def start_ping(self, game_id: str, interval: int = 30) -> None:
+    async def start_ping(self, game_id: str, interval: int =5) -> None:
         """
         开始定期ping
         

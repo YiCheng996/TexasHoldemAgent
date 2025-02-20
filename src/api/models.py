@@ -87,7 +87,7 @@ class AIPlayerConfig(BaseModel):
     base_url: str = Field(..., description="API基础URL")
     temperature: float = Field(0.7, ge=0, le=1, description="温度参数")
     max_tokens: int = Field(10000, ge=1000, description="最大token数")
-    timeout: int = Field(30, ge=10, description="超时时间")
+    timeout: int = Field(15, ge=10, description="超时时间")
     description: str = Field("在激进和保守之间寻找平衡的玩家", description="AI玩家性格描述")
 
 class AIPlayersConfig(BaseModel):

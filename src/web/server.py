@@ -47,7 +47,7 @@ class GameConfig(BaseModel):
 class WebSocketManager:
     def __init__(self):
         self.active_connections = {}  # game_id -> WebSocket
-        self.ping_interval = 30  # 30秒发送一次心跳
+        self.ping_interval = 5  # 30秒发送一次心跳
         self.last_ping = {}  # game_id -> timestamp
 
     async def connect(self, websocket: WebSocket, game_id: str):
@@ -110,7 +110,9 @@ def create_app():
         """创建新游戏"""
         try:
             game_id = str(uuid.uuid4())
-            logger.info(f"正在创建游戏: {game_id}, 配置: {config.model_dump()}")
+            # 使用配置文件中的值
+            num_players = game_config['game']['max_players']
+            logger.info(f"正在创建游戏: {game_id}, 玩家数量: {num_players}")
             
             # 创建游戏实例
             game = TexasHoldemGame(
@@ -124,15 +126,11 @@ def create_app():
             game.state.add_player("player_0", config.initial_stack, 0)
             logger.info(f"添加人类玩家: player_0, 初始筹码: {config.initial_stack}")
             
-            # 创建并添加AI玩家
+            # 创建并添加AI玩家，使用配置文件中的玩家数量
             from src.agents.llm import LLMAgent
-            from src.utils.config import load_config
             
-            # 加载LLM配置
-            llm_config = load_config('llm')
-            
-            # 创建AI玩家
-            for i in range(1, config.num_players):
+            # 创建AI玩家，数量由配置文件决定
+            for i in range(1, num_players):
                 agent_id = f"ai_{i}"
                 try:
                     ai_player = LLMAgent(agent_id, llm_config)
@@ -228,23 +226,104 @@ def create_app():
             raise HTTPException(status_code=404, detail="Game not found")
             
         try:
+            # 检查游戏状态
+            if game.phase == GamePhase.FINISHED:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Game is finished. Please start a new game."
+                )
+            
             logger.info(f"处理玩家动作: {action}")
+            
+            # 修复加注金额处理
+            amount = action.get("amount", 0)
+            if action["action_type"] == "RAISE":
+                logger.info(f"收到加注请求，金额: {amount}")
+                if amount <= 0:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Raise amount must be greater than 0"
+                    )
+                
+                # 验证加注金额是否合法
+                player = game.state.players.get(action["player_id"])
+                if not player:
+                    raise HTTPException(status_code=400, detail="Player not found")
+                    
+                if amount > player.chips:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Raise amount {amount} exceeds player chips {player.chips}"
+                    )
+                    
+                if amount < game.state.min_raise:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Raise amount {amount} is less than minimum raise {game.state.min_raise}"
+                    )
             
             # 创建动作对象
             player_action = PlayerAction(
                 player_id=action["player_id"],
-                action_type=action["action_type"],
-                amount=action.get("amount", 0),
+                action_type=ActionType[action["action_type"]],
+                amount=amount,
                 timestamp=datetime.now()
             )
+            
+            logger.info(f"创建的玩家动作: {player_action.model_dump()}")
             
             # 处理动作
             game.process_action(player_action)
             
             # 获取更新后的游戏状态
             updated_state = {
+                "phase": game.phase.name,
+                "pot_size": game.state.pot,
+                "community_cards": game.state.community_cards,
+                "current_player": game.state.current_player,
+                "min_raise": game.state.min_raise,
+                "max_raise": game.state.max_raise,
+                "game_result": game.state.game_result,  # 直接使用游戏结果
+                "players": [
+                    {
+                        "id": p.id,
+                        "chips": p.chips,
+                        "current_bet": p.current_bet,
+                        "is_active": p.is_active,
+                        "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                        "is_all_in": p.is_all_in,
+                        "position": p.position,
+                        "last_action": player_action.action_type.name if p.id == player_action.player_id else None,
+                        "last_amount": player_action.amount if p.id == player_action.player_id else None
+                    }
+                    for p in game.state.players.values()
+                ]
+            }
+            
+            logger.info(f"更新后的游戏状态: {updated_state}")
+            return updated_state
+            
+        except Exception as e:
+            logger.error(f"处理动作失败: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
+                
+    @api_router.post("/games/{game_id}/new_game")
+    async def start_new_game(game_id: str):
+        """开始新的一局游戏"""
+        try:
+            game = active_games.get(game_id)
+            if not game:
+                raise HTTPException(status_code=404, detail="Game not found")
+            
+            if game.phase != GamePhase.FINISHED:
+                raise HTTPException(status_code=400, detail="Game is not finished")
+            
+            # 开始新的一局
+            game.start_new_game()
+            
+            # 返回新的游戏状态
+            return {
                 "success": True,
-                "action": action,
                 "state": {
                     "phase": game.phase.name,
                     "pot_size": game.state.pot,
@@ -267,12 +346,9 @@ def create_app():
                 }
             }
             
-            logger.info(f"更新后的游戏状态: {updated_state}")
-            return updated_state
-            
         except Exception as e:
-            logger.error(f"处理动作失败: {e}")
-            raise HTTPException(status_code=400, detail=str(e))
+            logger.error(f"开始新游戏失败: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
                 
     # 主页路由
     @app.get("/")
@@ -393,7 +469,7 @@ def create_app():
                                             "chips": p.chips,
                                             "current_bet": p.current_bet,
                                             "is_active": p.is_active,
-                                            "cards": p.cards if p.id == "player_0" else [],
+                                            "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
                                             "last_action": ai_action.action_type.name if p.id == ai_action.player_id else None,
@@ -426,7 +502,7 @@ def create_app():
                                                 "chips": p.chips,
                                                 "current_bet": p.current_bet,
                                                 "is_active": p.is_active,
-                                                "cards": p.cards if p.id == "player_0" else [],
+                                                "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
                                                 "last_action": ai_action.action_type.name if p.id == ai_action.player_id else None,
@@ -437,9 +513,9 @@ def create_app():
                                     }
                                     logger.info(f"游戏进入新阶段: {game.phase.name}")
                                     await manager.send_game_state(game_id, updated_state)
-                                else:
-                                    # 添加延时，避免AI行动太快
-                                    await asyncio.sleep(1)
+                                # else:
+                                #     # 添加延时，避免AI行动太快
+                                #     await asyncio.sleep(1)
                                 
                             except Exception as e:
                                 logger.error(f"处理AI动作时出错: {str(e)}")
@@ -481,7 +557,7 @@ def create_app():
                                             "chips": p.chips,
                                             "current_bet": p.current_bet,
                                             "is_active": p.is_active,
-                                            "cards": p.cards if p.id == "player_0" else [],
+                                            "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
                                             "last_action": action.action_type.name if p.id == action.player_id else None,
@@ -513,7 +589,7 @@ def create_app():
                                                 "chips": p.chips,
                                                 "current_bet": p.current_bet,
                                                 "is_active": p.is_active,
-                                                "cards": p.cards if p.id == "player_0" else [],
+                                                "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
                                                 "last_action": action.action_type.name if p.id == action.player_id else None,
@@ -550,7 +626,7 @@ def create_app():
         """定期发送心跳包"""
         while True:
             try:
-                await asyncio.sleep(30)  # 每30秒发送一次心跳
+                await asyncio.sleep(5)  # 每30秒发送一次心跳
                 await manager.send_game_state(game_id, "ping")
             except Exception as e:
                 logger.error(f"发送心跳包时出错: {str(e)}")
@@ -571,5 +647,5 @@ if __name__ == "__main__":
         reload=True,
         reload_dirs=["src/web"],
         ws_ping_interval=20,  # 添加 WebSocket ping 间隔
-        ws_ping_timeout=30    # 添加 WebSocket ping 超时
+        ws_ping_timeout=5    # 添加 WebSocket ping 超时
     ) 

@@ -209,7 +209,7 @@ class MemoryManager:
         self.short_term_memory = []
         logger.info("Short-term memory cleared")
     
-    def prune_long_term(self, days: int = 30) -> None:
+    def prune_long_term(self, days: int = 5) -> None:
         """
         清理长期记忆
         

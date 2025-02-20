@@ -230,7 +230,7 @@ class LLMAgent(Agent):
             logger.info("\n" + "="*50)
             logger.info("🤖 AI玩家 {self.agent_id} 思考中...")
             logger.info(f"使用模型: {self.model_config['model']}")
-            logger.info(f"提示词:\n{prompt}")
+            # logger.info(f"提示词:\n{prompt}")
             
             # 调用LLM
             response = completion(
@@ -301,9 +301,40 @@ class LLMAgent(Agent):
                 raise ValueError(f"无效的动作类型: {action['type']}")
             
             # 验证加注金额
+            # 验证加注金额
             if action["type"] in ["RAISE", "ALL_IN"]:
-                if not isinstance(action["amount"], (int, float)) or action["amount"] <= 0:
-                    raise ValueError(f"加注金额必须是正数")
+                # 类型转换处理
+                raw_amount = action["amount"]
+                if isinstance(raw_amount, str):
+                    try:
+                        # 移除可能存在的非数字字符（如货币符号、百分号等）
+                        cleaned = ''.join(c for c in raw_amount if c.isdigit() or c in {'.', '-'})
+                        # 转换为浮点数后再取整
+                        action["amount"] = float(cleaned)
+                        logger.info(f"成功将字符串金额 {raw_amount} 转换为数字 {action['amount']}")
+                    except (ValueError, TypeError) as e:
+                        raise ValueError(
+                            f"无法将字符串金额转换为数字: {raw_amount}（错误: {str(e)}）"
+                        )
+
+                # 类型检查
+                if not isinstance(action["amount"], (int, float)):
+                    actual_type = type(raw_amount).__name__
+                    raise ValueError(
+                        f"加注金额类型错误，期望int/float/数字字符串，实际得到{actual_type}类型"
+                        f"（原始值：{raw_amount}）"
+                    )
+                
+                # 数值范围检查
+                if action["amount"] <= 0:
+                    raise ValueError(
+                        f"加注金额必须是正数，当前值：{action['amount']}"
+                    )
+                
+                # 强制转换为整数（扑克使用整数筹码）
+                action["amount"] = int(action["amount"])
+                logger.debug(f"最终加注金额（整数处理）: {action['amount']}")
+
             elif action["type"] in ["FOLD", "CHECK", "CALL"]:
                 action["amount"] = 0
             

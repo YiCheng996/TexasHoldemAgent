@@ -68,21 +68,14 @@ class GameState:
         
         logger.info("游戏状态已初始化")
         
-    def add_player(self, player_id: str, chips: int, position: int) -> None:
-        """
-        添加玩家
-        
-        Args:
-            player_id: 玩家ID
-            chips: 初始筹码
-            position: 座位位置
-        """
-        # 设置正确的位置
-        if player_id == "player_0":
+    def add_player(self, player_id: str, chips: int, position: int = None) -> None:
+        """添加玩家到游戏"""
+        if position is None:
+            # 自动分配下一个可用位置
+            used_positions = {p.position for p in self.players.values()}
             position = 0
-        elif player_id.startswith("ai_"):
-            # 从ai_1开始，位置从1开始递增
-            position = int(player_id.split("_")[1])
+            while position in used_positions:
+                position += 1
             
         player = PlayerState(player_id, chips, position=position)
         self.players[player_id] = player
@@ -230,18 +223,20 @@ class GameState:
     
     def reset_round(self) -> None:
         """重置回合状态"""
+        # 只有在开始新游戏时才重置玩家状态
+        if self.phase != "FINISHED":
+            for player in self.players.values():
+                player.has_acted = False
+                player.current_bet = 0
+                player.is_active = True  # 重新激活玩家
+        
         self.pot = 0
+        self.community_cards = []
+        self.current_bet = 0
         self.min_raise = 0
-        self.game_result = None  # 清空游戏结果
-        self.round_actions = []  # 清空回合动作历史
-        for player in self.players.values():
-            player.current_bet = 0
-            player.total_bet = 0  # 重置总下注
-            player.has_acted = False
-            player.is_active = True
-            player.is_all_in = False
-            player.cards = []
-        self.community_cards = []  # 清空公共牌
+        self.max_raise = 0
+        self.round_actions = []
+        logger.info("回合状态已重置")
     
     def set_player_cards(self, player_id: str, cards: List[str]) -> None:
         """
@@ -543,3 +538,11 @@ class GameState:
         # 返回获胜者信息
         winner_id, winner_hand, description = player_hands[0]
         return winner_id, self.pot, description
+
+    def stop_all_players(self) -> None:
+        """停止所有玩家的行动"""
+        for player in self.players.values():
+            player.has_acted = True
+            player.is_active = False  # 设置为非活跃状态
+        self.current_player = None
+        logger.info("已停止所有玩家的行动")

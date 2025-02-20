@@ -135,6 +135,11 @@ class TexasHoldemGame:
         
         self.phase = GamePhase.PRE_FLOP
         logger.info(f"Game {self.game_id} started")
+        
+        # 设置第一个行动玩家（大盲注后一位）
+        bb_position = (self.button_position + 2) % (max_position + 1)
+        next_position = (bb_position + 1) % (max_position + 1)
+        current_player = next((p for p in active_players if p.position == next_position), None)
     
     def post_blinds(self) -> None:
         """收取盲注"""
@@ -325,57 +330,57 @@ class TexasHoldemGame:
             self.state.current_player = None
 
     def process_action(self, action: PlayerAction) -> None:
-        """
-        处理玩家动作
-        
-        Args:
-            action: 玩家动作
-        """
-        current_player = self.get_current_player()
-        if not current_player or current_player.id != action.player_id:
-            raise ValueError("现在不是您的回合")
+        """处理玩家动作"""
+        try:
+            # 检查游戏状态
+            if self.phase == GamePhase.FINISHED:
+                raise ValueError("Game is finished. Cannot process more actions.")
             
-        # 验证动作合法性
-        self._validate_action(current_player, action)
-        
-        # 记录动作到历史记录
-        logger.info(f"处理玩家 {action.player_id} 的动作: {action.action_type.name}")
-        self.state.round_actions.append(action)
-        
-        # 执行动作
-        if action.action_type == ActionType.FOLD:
-            self.state.fold_player(action.player_id)
-            logger.info(f"玩家 {action.player_id} 弃牌")
-        elif action.action_type == ActionType.CALL:
-            self.state.call(action.player_id)
-            logger.info(f"玩家 {action.player_id} 跟注")
-        elif action.action_type == ActionType.RAISE:
-            self.state.raise_bet(action.player_id, action.amount)
-            logger.info(f"玩家 {action.player_id} 加注到 {action.amount}")
-        elif action.action_type == ActionType.ALL_IN:
-            self.state.all_in(action.player_id)
-            logger.info(f"玩家 {action.player_id} 全下")
-        elif action.action_type == ActionType.CHECK:
-            logger.info(f"玩家 {action.player_id} 过牌")
-        
-        # 标记玩家已行动
-        current_player.has_acted = True
-        logger.info(f"玩家 {action.player_id} 已标记为已行动")
-        
-        # 如果是加注，重置其他玩家的has_acted状态
-        if action.action_type == ActionType.RAISE or action.action_type == ActionType.ALL_IN:
-            for player in self.state.get_active_players():
-                if player.id != action.player_id and not player.is_all_in:
-                    player.has_acted = False
-                    logger.info(f"由于{action.action_type.name}，重置玩家 {player.id} 的行动状态")
-        
-        # 更新当前玩家
-        self.update_current_player()
-        
-        # 检查回合是否结束
-        if self.is_round_complete():
-            logger.info("回合结束，所有玩家都已行动")
-            self.next_phase()
+            current_player = self.get_current_player()
+            if not current_player or current_player.id != action.player_id:
+                raise ValueError("Not your turn")
+            
+            # 验证动作
+            self._validate_action(current_player, action)
+            
+            # 执行动作
+            if action.action_type == ActionType.FOLD:
+                self.state.fold_player(action.player_id)
+                logger.info(f"玩家 {action.player_id} 弃牌")
+                
+                # 检查是否只剩一个玩家
+                active_players = self.state.get_active_players()
+                if len(active_players) == 1:
+                    logger.info(f"只剩一个活跃玩家: {active_players[0].id}")
+                    # 直接结束游戏
+                    self._end_game()
+                    return
+                
+            elif action.action_type == ActionType.CHECK:
+                logger.info(f"玩家 {action.player_id} 过牌")
+                
+            elif action.action_type == ActionType.CALL:
+                self.state.call(action.player_id)
+                logger.info(f"玩家 {action.player_id} 跟注")
+                
+            elif action.action_type == ActionType.RAISE:
+                self.state.raise_bet(action.player_id, action.amount)
+                logger.info(f"玩家 {action.player_id} 加注到 {action.amount}")
+            
+            # 标记玩家已行动
+            current_player.has_acted = True
+            
+            # 更新当前玩家
+            self.update_current_player()
+            
+            # 检查回合是否结束
+            if self.is_round_complete():
+                logger.info("回合结束，所有玩家都已行动")
+                self.next_phase()
+            
+        except Exception as e:
+            logger.error(f"处理玩家动作时出错: {str(e)}")
+            raise
     
     def _validate_action(self, player: PlayerState, action: PlayerAction) -> None:
         """验证动作合法性"""
@@ -424,19 +429,32 @@ class TexasHoldemGame:
             active_players = self.state.get_active_players()
             logger.info(f"活跃玩家数量: {len(active_players)}")
             
+            # 设置游戏状态为结束
+            self.phase = GamePhase.FINISHED
+            
+            # 准备摊牌数据
+            showdown_data = []
+            winning_hand = None  # 初始化 winning_hand 变量
+            
+            # 结算逻辑
             if len(active_players) == 1:
                 # 只剩一个玩家，直接获胜
                 winner = active_players[0]
-                logger.info(f"只剩一个玩家 {winner.id}，直接获胜")
-                # 在记录日志前先获取底池金额
                 pot_amount = self.state.pot
                 self.state.award_pot(winner.id)
-                logger.info(f"玩家 {winner.id} 获胜，赢得底池 {pot_amount} 筹码")
-                winning_hand = None
+                logger.info(f"玩家 {winner.id} 获得底池 {pot_amount} 筹码")
+                
+                # 添加获胜者信息（因弃牌获胜）
+                showdown_data.append({
+                    "player_id": winner.id,
+                    "hole_cards": winner.cards,
+                    "hand_rank": "WINNER_BY_FOLD",
+                    "is_winner": True
+                })
+                
             else:
-                # 比较手牌大小
+                # 比较手牌
                 results = []
-                logger.info("开始比较手牌:")
                 for player in active_players:
                     try:
                         hand_result = HandEvaluator.evaluate_hand(
@@ -444,7 +462,13 @@ class TexasHoldemGame:
                             self.state.community_cards
                         )
                         results.append((player, hand_result))
-                        logger.info(f"玩家 {player.id} 的手牌: {player.cards}, 公共牌: {self.state.community_cards}, 牌型: {hand_result.rank}")
+                        # 添加玩家摊牌数据
+                        showdown_data.append({
+                            "player_id": player.id,
+                            "hole_cards": player.cards,
+                            "hand_rank": hand_result.rank.name,
+                            "is_winner": False  # 稍后更新获胜者
+                        })
                     except Exception as e:
                         logger.error(f"评估玩家 {player.id} 手牌时出错: {str(e)}")
                         raise
@@ -453,38 +477,48 @@ class TexasHoldemGame:
                 results.sort(key=lambda x: x[1], reverse=True)
                 winner = results[0][0]
                 winning_hand = results[0][1]
+                pot_amount = self.state.pot
                 
-                logger.info(f"获胜者是 {winner.id}，牌型: {winning_hand.rank}")
+                # 更新获胜者标记
+                for data in showdown_data:
+                    if data["player_id"] == winner.id:
+                        data["is_winner"] = True
+                
                 self.state.award_pot(winner.id)
-                logger.info(f"玩家 {winner.id} 获胜，赢得底池 {self.state.pot} 筹码")
-            
-            # 设置游戏状态为结束
-            self.phase = GamePhase.FINISHED
+                logger.info(f"玩家 {winner.id} 获胜，赢得底池 {pot_amount} 筹码")
             
             # 广播游戏结果
             self.state.game_result = {
                 "winner_id": winner.id,
-                "pot_amount": self.state.pot,
-                "winning_hand": winning_hand.rank.name if winning_hand else None,
-                "community_cards": self.state.community_cards
+                "pot_amount": pot_amount,
+                "winning_hand": winning_hand.rank.name if winning_hand else None,  # 处理 winning_hand 可能为 None 的情况
+                "community_cards": self.state.community_cards,
+                "showdown_data": showdown_data  # 添加摊牌数据
             }
+            
+            # 停止所有AI玩家的行动
+            self.state.stop_all_players()
+            
             logger.info(f"游戏结果: {self.state.game_result}")
-            
-            # 重置游戏状态，准备下一局
-            self.dealer.reset_deck()
-            self.state.reset_round()
-            self.phase = GamePhase.WAITING
-            self.current_player_idx = 0
-            self.button_position = (self.button_position + 1) % len(self.state.players)  # 移动庄家位置
-            
-            logger.info("游戏结算完成，准备开始新一局")
-            
-            # 开始新的一局
-            self.start_game()
             
         except Exception as e:
             logger.error(f"游戏结算过程中出错: {str(e)}")
             raise
+
+    def start_new_game(self) -> None:
+        """开始新的一局游戏"""
+        if self.phase != GamePhase.FINISHED:
+            raise ValueError("只能在游戏结束状态开始新一局")
+        
+        # 重置游戏状态
+        self.dealer.reset_deck()
+        self.state.reset_round()
+        self.phase = GamePhase.WAITING
+        self.current_player_idx = 0
+        self.button_position = (self.button_position + 1) % len(self.state.players)
+        
+        # 开始新的一局
+        self.start_game()
 
     def evaluate_hand(self, player_id: str) -> tuple:
         """
@@ -523,3 +557,16 @@ class TexasHoldemGame:
         
         description = descriptions.get(result.rank, "未知牌型")
         return result, description
+
+    def get_next_position(self, current_position: int) -> int:
+        """获取下一个有效位置"""
+        active_players = self.state.get_active_players()
+        positions = sorted(p.position for p in active_players)
+        if not positions:
+            return 0
+        
+        try:
+            idx = positions.index(current_position)
+            return positions[(idx + 1) % len(positions)]
+        except ValueError:
+            return positions[0]
