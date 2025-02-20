@@ -131,13 +131,9 @@ function handleWebSocketMessage(message) {
     // 更新游戏状态
     if (message.phase !== undefined) {
         console.log('更新游戏状态:', message);
+        console.log('消息中的玩家数据:', message.players);
         
-        // 如果游戏阶段是FINISHED，显示结算弹窗
-        if (message.phase === 'FINISHED' && message.game_result) {
-            showGameResult(message.game_result);
-            return;
-        }
-        
+        // 先更新游戏状态
         gameState = {
             ...gameState,
             ...message,
@@ -154,7 +150,33 @@ function handleWebSocketMessage(message) {
                 isAllIn: player.is_all_in
             }))
         };
+        
+        // 如果游戏阶段是FINISHED，显示结算弹窗并立即更新UI
+        if (message.phase === 'FINISHED' && message.game_result) {
+            console.log('游戏结束，显示结果');
+            updateUI();  // 先更新UI以反映最终状态
+            showGameResult(message.game_result);
+            return;
+        }
+        
+        // 更新UI
         updateUI();
+        
+        // 检查是否有table_talk消息
+        if (message.table_talk && message.table_talk.message) {
+            // 获取发送消息的玩家ID
+            const actionPlayer = message.players.find(p => p.last_action);
+            console.log('执行动作的玩家:', actionPlayer);
+            
+            if (actionPlayer && actionPlayer.id.startsWith('ai_')) {
+                console.log('显示AI消息:', actionPlayer.id, message.table_talk.message);
+                // 短暂延迟以确保DOM已更新
+                setTimeout(() => {
+                    showPlayerMessage(actionPlayer.id, message.table_talk.message);
+                }, 100);
+            }
+        }
+        
         return;
     }
     
@@ -163,11 +185,11 @@ function handleWebSocketMessage(message) {
         switch (message.type) {
             case 'error':
                 showError(message.message || '发生错误');
-                    break;
+                break;
             case 'game_result':
                 showGameResult(message.data);
-                    break;
-                default:
+                break;
+            default:
                 console.log('未知消息类型:', message.type);
         }
     }
@@ -182,10 +204,12 @@ function updateUI() {
     elements.gamePhase.textContent = `阶段: ${getPhaseText(gameState.phase)}`;
     elements.potSize.textContent = `底池: ${gameState.potSize || 0}`;
     elements.minRaise.textContent = `最小加注: ${gameState.minRaise || 0}`;
-    elements.currentPlayer.textContent = `当前行动: ${
-        gameState.currentPlayer === 'player_0' ? '我' :
-        gameState.currentPlayer ? 'AI玩家 ' + gameState.currentPlayer.slice(-1) : '-'
-    }`;
+    elements.currentPlayer.textContent = gameState.phase === 'FINISHED' ? 
+        '游戏已结束' : 
+        `当前行动: ${
+            gameState.currentPlayer === 'player_0' ? '我' :
+            gameState.currentPlayer ? 'AI玩家 ' + gameState.currentPlayer.slice(-1) : '-'
+        }`;
     
     // 更新底池显示
     elements.potDisplay.textContent = `底池: ${gameState.potSize || 0}`;
@@ -196,8 +220,12 @@ function updateUI() {
     // 更新玩家区域
     updatePlayers();
     
-    // 更新操作面板
-    updateActionPanel();
+    // 更新操作面板（在FINISHED状态下隐藏）
+    if (gameState.phase === 'FINISHED') {
+        elements.actionPanel.style.display = 'none';
+    } else {
+        updateActionPanel();
+    }
     
     // 更新状态消息
     elements.statusMessage.textContent = getStatusMessage();
@@ -223,8 +251,8 @@ function updatePlayers() {
     
     if (!gameState.players || gameState.players.length === 0) {
         console.log('没有玩家数据');
-                return;
-            }
+        return;
+    }
             
     console.log('更新玩家显示:', gameState.players);
     
@@ -233,15 +261,19 @@ function updatePlayers() {
     
     gameState.players.forEach((player, index) => {
         const seat = document.createElement('div');
-        seat.className = `player-seat ${player.id === gameState.current_player ? 'active' : ''} ${!player.is_active ? 'inactive' : ''}`;
+        seat.className = `player-seat ${player.id === gameState.currentPlayer ? 'active' : ''} ${!player.isActive ? 'inactive' : ''}`;
         
         // 设置位置样式
         const position = positions[index];
         seat.style.cssText = position;
         
+        // 设置data-player-id属性
+        seat.setAttribute('data-player-id', player.id);
+        console.log(`创建玩家座位，ID: ${player.id}, 位置: ${position}`);
+        
         // 创建玩家信息HTML
         seat.innerHTML = `
-            <div class="player-info">
+            <div class="player-info" data-player-id="${player.id}">
                 <div class="player-name">${player.id === 'player_0' ? '我' : 'AI玩家 ' + player.id.slice(-1)}</div>
                 <div class="player-chips">筹码: ${player.chips}</div>
                 <div class="player-bet">当前下注: ${player.current_bet || 0}</div>
@@ -256,10 +288,22 @@ function updatePlayers() {
         `;
         
         elements.playersContainer.appendChild(seat);
+        
+        // 验证座位元素是否正确创建
+        const createdSeat = elements.playersContainer.querySelector(`[data-player-id="${player.id}"]`);
+        console.log(`验证玩家 ${player.id} 的座位元素:`, createdSeat ? '成功' : '失败');
+    });
+    
+    // 验证所有玩家座位
+    const allSeats = elements.playersContainer.querySelectorAll('.player-seat');
+    console.log('所有玩家座位:', allSeats.length);
+    allSeats.forEach(seat => {
+        const id = seat.getAttribute('data-player-id');
+        console.log(`座位ID: ${id}`);
     });
 }
 
-        // 计算玩家位置
+// 计算玩家位置
 function calculatePlayerPositions(numPlayers) {
     const positions = [];
     
@@ -330,14 +374,38 @@ async function handleAction(actionType, amount = 0) {
             })
         });
         
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || '动作执行失败');
+        // 获取响应文本
+        const responseText = await response.text();
+        console.log('服务器响应:', responseText);
+        
+        // 尝试解析JSON
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('解析响应JSON失败:', e);
+            throw new Error(`服务器响应格式错误: ${responseText}`);
         }
         
-        const data = await response.json();
+        if (!response.ok) {
+            // 如果响应不成功，抛出错误
+            const errorMessage = data?.detail || data?.message || '动作执行失败';
+            throw new Error(errorMessage);
+        }
         
-        // 直接使用返回的数据更新游戏状态
+        // 验证响应数据的完整性
+        if (!data || typeof data !== 'object') {
+            console.error('无效的响应数据:', data);
+            throw new Error('服务器返回的数据无效');
+        }
+        
+        // 验证必要字段
+        if (data.phase === undefined) {
+            console.error('响应数据缺少phase字段:', data);
+            throw new Error('服务器返回的数据不完整');
+        }
+        
+        // 更新游戏状态
         gameState = {
             ...gameState,
             phase: data.phase,
@@ -363,7 +431,7 @@ async function handleAction(actionType, amount = 0) {
         
     } catch (error) {
         console.error('执行动作失败:', error);
-        showError(error.message);
+        showError(error.message || '执行动作时发生错误');
     }
 }
 
@@ -464,6 +532,7 @@ function showError(message) {
     elements.statusMessage.style.display = 'block';
     elements.statusMessage.textContent = message;
 }
+
 // 首先定义所有需要的函数
 function getHandRankText(handRank) {
     if (!handRank) return '';
@@ -484,6 +553,7 @@ function getHandRankText(handRank) {
     
     return rankMap[handRank] || handRank;
 }
+
 // 显示游戏结果
 function showGameResult(result) {
     try {
@@ -615,16 +685,33 @@ document.addEventListener('DOMContentLoaded', initGame);
 // 开始新游戏
 async function startNewGame() {
     try {
+        // 检查游戏状态
+        if (gameState.phase !== 'FINISHED') {
+            showError('只能在游戏结束后开始新游戏');
+            return;
+        }
+
         const response = await fetch(`/api/games/${gameState.gameId}/new_game`, {
             method: 'POST'
         });
         
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || '开始新游戏失败');
+        // 获取响应文本
+        const responseText = await response.text();
+        console.log('服务器响应:', responseText);
+        
+        // 尝试解析JSON
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('解析响应JSON失败:', e);
+            throw new Error(`服务器响应格式错误: ${responseText}`);
         }
         
-        const data = await response.json();
+        if (!response.ok) {
+            const error = data?.detail || data?.message || '开始新游戏失败';
+            throw new Error(error);
+        }
         
         // 更新游戏状态
         if (data.state) {
@@ -645,10 +732,14 @@ async function startNewGame() {
             };
             
             // 隐藏结果弹窗
-            document.getElementById('game-result-dialog').style.display = 'none';
+            const resultDialog = document.getElementById('result-dialog');
+            if (resultDialog) {
+                resultDialog.style.display = 'none';
+            }
             
             // 更新UI
             updateUI();
+            console.log('新游戏已开始，当前状态:', gameState);
         }
         
     } catch (error) {
@@ -657,8 +748,101 @@ async function startNewGame() {
     }
 }
 
+// 修改showPlayerMessage函数
+function showPlayerMessage(playerId, message) {
+    console.log('尝试显示玩家消息:', playerId, message);
+    
+    // 直接查找玩家座位
+    try {
+        let playerSeat = document.querySelector(`.player-seat[data-player-id="${playerId}"]`);
+        console.log('查找到的玩家座位元素:', playerSeat);
+        
+        if (!playerSeat) {
+            console.error(`找不到玩家座位: ${playerId}`);
+            // 尝试重新查找
+            setTimeout(() => {
+                try {
+                    // 首先尝试直接查找
+                    playerSeat = document.querySelector(`.player-seat[data-player-id="${playerId}"]`);
+                    console.log('重试查找到的玩家座位元素:', playerSeat);
+                    
+                    if (playerSeat) {
+                        console.log('重试成功找到玩家座位');
+                        showPlayerMessageImpl(playerSeat, message);
+                    } else {
+                        // 如果还是找不到，输出所有座位信息以便调试
+                        const allSeats = document.querySelectorAll('.player-seat');
+                        console.log('所有玩家座位元素:', allSeats);
+                        allSeats.forEach(seat => {
+                            const id = seat.getAttribute('data-player-id');
+                            console.log(`座位元素:`, {
+                                id: id,
+                                classList: seat.className,
+                                html: seat.innerHTML
+                            });
+                            if (id === playerId) {
+                                console.log('通过遍历找到玩家座位');
+                                showPlayerMessageImpl(seat, message);
+                                return;
+                            }
+                        });
+                        
+                        if (!playerSeat) {
+                            console.error('重试仍然找不到玩家座位，当前DOM结构:', document.querySelector('#players-container').innerHTML);
+                        }
+                    }
+                } catch (error) {
+                    console.error('重试查找玩家座位时出错:', error);
+                }
+            }, 100);
+            return;
+        }
+
+        showPlayerMessageImpl(playerSeat, message);
+    } catch (error) {
+        console.error('查找玩家座位时出错:', error);
+    }
+}
+
+// 添加实际显示消息的辅助函数
+function showPlayerMessageImpl(playerSeat, message) {
+    // 移除现有的对话气泡
+    const existingBubble = playerSeat.querySelector('.player-speech-bubble');
+    if (existingBubble) {
+        existingBubble.remove();
+    }
+
+    // 创建新的对话气泡
+    const bubble = document.createElement('div');
+    bubble.className = 'player-speech-bubble';
+    bubble.innerHTML = `<div class="message-text">${message}</div>`;
+
+    // 添加到玩家座位
+    playerSeat.appendChild(bubble);
+    console.log('对话气泡已添加到玩家座位');
+
+    // 添加active类以触发动画
+    requestAnimationFrame(() => {
+        bubble.classList.add('active');
+        console.log('对话气泡动画已激活');
+    });
+
+    // 5秒后移除
+    setTimeout(() => {
+        bubble.classList.remove('active');
+        setTimeout(() => bubble.remove(), 300);
+        console.log('对话气泡已移除');
+    }, 5000);
+}
+
+// 修改updatePlayersDisplay函数
 function updatePlayersDisplay() {
     const playersContainer = document.getElementById('players-container');
+    if (!playersContainer) {
+        console.error('找不到players-container元素');
+        return;
+    }
+    
     playersContainer.innerHTML = '';
     
     // 计算玩家位置
@@ -668,14 +852,23 @@ function updatePlayersDisplay() {
         'left',          // AI 2的位置
     ];
     
+    // 确保gameState.players存在且是数组
+    if (!Array.isArray(gameState.players)) {
+        console.error('gameState.players不是数组:', gameState.players);
+        return;
+    }
+    
+    console.log('更新玩家显示，当前玩家数据:', gameState.players);
+    
     gameState.players.forEach((player, index) => {
         const playerDiv = document.createElement('div');
         playerDiv.className = `player-seat position-${positions[index]}`;
+        playerDiv.setAttribute('data-player-id', player.id);  // 添加到外层div
         
         // 添加当前行动玩家的高亮效果
         if (player.id === gameState.currentPlayer) {
             playerDiv.classList.add('active');
-            logger.info(`高亮当前行动玩家: ${player.id}`);
+            console.log(`设置玩家 ${player.id} 为当前行动玩家`);
         }
         
         // 添加玩家是否激活的状态
@@ -692,11 +885,19 @@ function updatePlayersDisplay() {
                 ${player.isAllIn ? '<div class="player-all-in">全下</div>' : ''}
             </div>
             <div class="player-cards">
-                ${player.cards.map(card => createCardHTML(card)).join('')}
+                ${player.cards ? player.cards.map(card => createCardHTML(card)).join('') : ''}
             </div>
         `;
         
         playersContainer.appendChild(playerDiv);
+        console.log(`已添加玩家 ${player.id} 的座位元素，data-player-id=${player.id}，位置=${positions[index]}`);
+    });
+    
+    // 验证所有玩家座位是否正确创建
+    const allSeats = document.querySelectorAll('.player-seat');
+    console.log('创建完成后的所有玩家座位:', allSeats);
+    allSeats.forEach(seat => {
+        console.log('座位ID:', seat.getAttribute('data-player-id'));
     });
 }
 

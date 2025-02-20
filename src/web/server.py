@@ -283,7 +283,7 @@ def create_app():
                 "current_player": game.state.current_player,
                 "min_raise": game.state.min_raise,
                 "max_raise": game.state.max_raise,
-                "game_result": game.state.game_result,  # 直接使用游戏结果
+                "game_result": game.state.game_result,
                 "players": [
                     {
                         "id": p.id,
@@ -300,7 +300,9 @@ def create_app():
                 ]
             }
             
-            logger.info(f"更新后的游戏状态: {updated_state}")
+            logger.info(f"发送更新后的游戏状态: {updated_state}")
+            
+            # 直接返回更新后的状态，不使用WebSocket发送
             return updated_state
             
         except Exception as e:
@@ -479,6 +481,10 @@ def create_app():
                                     ]
                                 }
                                 
+                                # 如果是AI玩家的动作，添加table_talk消息
+                                if hasattr(ai_action, 'table_talk') and ai_action.table_talk:
+                                    updated_state["table_talk"] = ai_action.table_talk
+                                
                                 # 发送更新后的状态
                                 logger.info(f"发送AI行动后的游戏状态: {updated_state}")
                                 await manager.send_game_state(game_id, updated_state)
@@ -513,9 +519,6 @@ def create_app():
                                     }
                                     logger.info(f"游戏进入新阶段: {game.phase.name}")
                                     await manager.send_game_state(game_id, updated_state)
-                                # else:
-                                #     # 添加延时，避免AI行动太快
-                                #     await asyncio.sleep(1)
                                 
                             except Exception as e:
                                 logger.error(f"处理AI动作时出错: {str(e)}")
@@ -566,6 +569,10 @@ def create_app():
                                         for p in game.state.players.values()
                                     ]
                                 }
+                                
+                                # 如果是AI玩家的动作，添加table_talk消息
+                                if hasattr(action, 'table_talk') and action.table_talk:
+                                    updated_state["table_talk"] = action.table_talk
                                 
                                 logger.info(f"发送更新后的游戏状态: {updated_state}")
                                 await manager.send_game_state(game_id, updated_state)

@@ -41,7 +41,7 @@ class LLMAgent(Agent):
             self.model_config = config["ai_players"][agent_id]
             self.description = self.model_config.get(
                 "description", 
-                "在激进和保守之间寻找平衡的玩家"
+                "享受游戏"
             )
         else:
             # 如果找不到对应配置，抛出异常
@@ -98,15 +98,16 @@ class LLMAgent(Agent):
                     if amount > self.current_observation.chips:
                         raise ValueError(f"加注金额 {amount} 超过了剩余筹码 {self.current_observation.chips}")
                 
-                # 创建动作对象
+                # 创建动作对象，添加table_talk
                 action = PlayerAction(
                     player_id=self.agent_id,
                     action_type=action_type,
                     amount=amount,
-                    timestamp=datetime.now()
+                    timestamp=datetime.now(),
+                    table_talk=decision.get("table_talk", None)  # 添加table_talk
                 )
                 
-                logger.info(f"生成动作: {action.action_type.name} 金额: {action.amount}")
+                logger.info(f"生成动作: {action.action_type.name} 金额: {action.amount} table_talk: {action.table_talk}")
                 return action
                 
             except Exception as e:

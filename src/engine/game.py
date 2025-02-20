@@ -41,6 +41,7 @@ class PlayerAction:
     action_type: ActionType  # 动作类型
     amount: int = 0        # 动作金额
     timestamp: Optional[datetime] = None  # 动作时间戳
+    table_talk: Optional[Dict[str, str]] = None  # 对话内容
     
     def model_dump(self) -> Dict[str, Any]:
         """转换为字典格式"""
@@ -48,7 +49,8 @@ class PlayerAction:
             "player_id": self.player_id,
             "action_type": self.action_type.name,  # 使用枚举的名称
             "amount": self.amount,
-            "timestamp": self.timestamp.isoformat() if self.timestamp else None
+            "timestamp": self.timestamp.isoformat() if self.timestamp else None,
+            "table_talk": self.table_talk
         }
 
 class TexasHoldemGame:
