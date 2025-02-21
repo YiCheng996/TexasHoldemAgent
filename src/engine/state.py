@@ -45,6 +45,7 @@ class PlayerState:
     is_active: bool = True     # 是否仍在游戏中
     is_all_in: bool = False    # 是否全下
     position: int = 0          # 玩家位置
+    model_name: Optional[str] = None  # 添加模型名称属性
 
 class GameState:
     """游戏状态类"""

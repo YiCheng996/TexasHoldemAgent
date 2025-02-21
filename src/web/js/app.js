@@ -208,7 +208,7 @@ function updateUI() {
         '游戏已结束' : 
         `当前行动: ${
             gameState.currentPlayer === 'player_0' ? '我' :
-            gameState.currentPlayer ? 'AI玩家 ' + gameState.currentPlayer.slice(-1) : '-'
+            gameState.currentPlayer ? getPlayerDisplayName(gameState.currentPlayer) : '-'
         }`;
     
     // 更新底池显示
@@ -274,7 +274,7 @@ function updatePlayers() {
         // 创建玩家信息HTML
         seat.innerHTML = `
             <div class="player-info" data-player-id="${player.id}">
-                <div class="player-name">${player.id === 'player_0' ? '我' : 'AI玩家 ' + player.id.slice(-1)}</div>
+                <div class="player-name">${player.id === 'player_0' ? '我' : getPlayerDisplayName(player.id)}</div>
                 <div class="player-chips">筹码: ${player.chips}</div>
                 <div class="player-bet">当前下注: ${player.current_bet || 0}</div>
                 ${player.is_all_in ? '<div class="player-all-in">全下</div>' : ''}
@@ -574,7 +574,7 @@ function showGameResult(result) {
         
         // 显示获胜者
         const winnerId = result.winner_id;
-        const winnerName = winnerId === 'player_0' ? '我' : 'AI玩家 ' + winnerId.slice(-1);
+        const winnerName = winnerId === 'player_0' ? '我' : getPlayerDisplayName(winnerId);
         message += `<h3>${winnerName} 获胜!</h3>`;
         message += `<p>赢得筹码: ${result.pot_amount}</p>`;
         
@@ -597,7 +597,7 @@ function showGameResult(result) {
             message += result.showdown_data.map(player => `
                 <div class="player-hand ${player.is_winner ? 'winner' : ''}">
                     <div class="player-info">
-                        <span>${player.player_id === 'player_0' ? '我' : 'AI玩家 ' + player.player_id.slice(-1)}</span>
+                        <span>${player.player_id === 'player_0' ? '我' : getPlayerDisplayName(player.player_id)}</span>
                         ${player.hand_rank === 'WINNER_BY_FOLD' ? 
                             '<span class="hand-rank">(因其他玩家弃牌获胜)</span>' : 
                             `<span class="hand-rank">(${getHandRankText(player.hand_rank)})</span>`
@@ -655,7 +655,7 @@ function getStatusMessage() {
     }
     
     return gameState.currentPlayer ? 
-        `等待AI玩家 ${gameState.currentPlayer.slice(-1)} 行动` :
+        `等待${getPlayerDisplayName(gameState.currentPlayer)}行动` :
         '等待其他玩家行动...';
 }
 
@@ -879,7 +879,7 @@ function updatePlayersDisplay() {
         // 构建玩家信息HTML
         playerDiv.innerHTML = `
             <div class="player-info">
-                <div class="player-name">${player.id === 'player_0' ? '我' : 'AI玩家 ' + player.id.slice(-1)}</div>
+                <div class="player-name">${player.id === 'player_0' ? '我' : getPlayerDisplayName(player.id)}</div>
                 <div class="player-chips">筹码: ${player.chips}</div>
                 ${player.currentBet > 0 ? `<div class="player-bet">当前下注: ${player.currentBet}</div>` : ''}
                 ${player.isAllIn ? '<div class="player-all-in">全下</div>' : ''}
@@ -927,4 +927,23 @@ function updateGameState(data) {
         
         updateUI();
     }
+}
+
+// 添加一个新的辅助函数来获取玩家显示名称
+function getPlayerDisplayName(playerId) {
+    if (playerId === 'player_0') return '我';
+    
+    // 查找玩家数据
+    const player = gameState.players.find(p => p.id === playerId);
+    if (!player) return `AI玩家 ${playerId.slice(-1)}`;  // 回退到默认显示
+    
+    // 如果有模型名称，使用它
+    if (player.model_name) {
+        // 提取模型名称的最后一部分（例如从"openai/glm-4-air"提取"glm-4-air"）
+        const modelName = player.model_name.split('/').pop();
+        return modelName;
+    }
+    
+    // 如果没有模型名称，使用默认显示
+    return `AI玩家 ${playerId.slice(-1)}`;
 } 

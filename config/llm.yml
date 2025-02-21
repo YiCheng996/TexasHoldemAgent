@@ -1,7 +1,7 @@
 # AI玩家配置
 ai_players:
   ai_1:
-    model: "openai/glm-4-air"
+    model: "openai/gpt-4o"
     api_key: "your api key"
     base_url: "your base url"
     temperature: 0.8

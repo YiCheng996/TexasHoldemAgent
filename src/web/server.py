@@ -135,7 +135,12 @@ def create_app():
                 try:
                     ai_player = LLMAgent(agent_id, llm_config)
                     game.add_player(ai_player)
-                    logger.info(f"成功创建AI玩家: {agent_id}")
+                    # 保存AI玩家的模型信息
+                    if "ai_players" in llm_config and agent_id in llm_config["ai_players"]:
+                        game.state.players[agent_id].model_name = llm_config["ai_players"][agent_id]["model"]
+                        logger.info(f"成功创建AI玩家: {agent_id}, 模型: {llm_config['ai_players'][agent_id]['model']}")
+                    else:
+                        logger.info(f"成功创建AI玩家: {agent_id}, 使用默认模型")
                 except Exception as e:
                     logger.error(f"创建AI玩家失败: {e}")
                     raise ValueError(f"无法创建AI玩家: {e}")
@@ -208,7 +213,8 @@ def create_app():
                     "is_active": player.is_active,
                     "cards": list(player.cards) if player.id == "player_0" else [],  # 将元组转换为列表
                     "is_all_in": player.is_all_in,
-                    "position": player.position
+                    "position": player.position,
+                    "model_name": getattr(player, "model_name", None)  # 添加模型名称
                 }
                 state["players"].append(player_info)
             
@@ -293,6 +299,7 @@ def create_app():
                         "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                         "is_all_in": p.is_all_in,
                         "position": p.position,
+                        "model_name": getattr(p, "model_name", None),  # 添加模型名称
                         "last_action": player_action.action_type.name if p.id == player_action.player_id else None,
                         "last_amount": player_action.amount if p.id == player_action.player_id else None
                     }
@@ -341,7 +348,10 @@ def create_app():
                             "is_active": p.is_active,
                             "cards": p.cards if p.id == "player_0" else [],
                             "is_all_in": p.is_all_in,
-                            "position": p.position
+                            "position": p.position,
+                            "model_name": getattr(p, "model_name", None),  # 添加模型名称
+                            "last_action": None,
+                            "last_amount": None
                         }
                         for p in game.state.players.values()
                     ]
@@ -396,7 +406,10 @@ def create_app():
                         "is_active": player_state.is_active,
                         "cards": player_state.cards if player_id == "player_0" else [],
                         "is_all_in": player_state.is_all_in,
-                        "position": player_state.position
+                        "position": player_state.position,
+                        "model_name": getattr(player_state, "model_name", None),  # 添加模型名称
+                        "last_action": None,
+                        "last_amount": None
                     }
                     initial_state["players"].append(player_data)
                 
@@ -474,6 +487,7 @@ def create_app():
                                             "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
+                                            "model_name": getattr(p, "model_name", None),  # 添加模型名称
                                             "last_action": ai_action.action_type.name if p.id == ai_action.player_id else None,
                                             "last_amount": ai_action.amount if p.id == ai_action.player_id else None
                                         }
@@ -511,6 +525,7 @@ def create_app():
                                                 "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
+                                                "model_name": getattr(p, "model_name", None),  # 添加模型名称
                                                 "last_action": ai_action.action_type.name if p.id == ai_action.player_id else None,
                                                 "last_amount": ai_action.amount if p.id == ai_action.player_id else None
                                             }
@@ -563,6 +578,7 @@ def create_app():
                                             "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
+                                            "model_name": getattr(p, "model_name", None),  # 添加模型名称
                                             "last_action": action.action_type.name if p.id == action.player_id else None,
                                             "last_amount": action.amount if p.id == action.player_id else None
                                         }
@@ -599,6 +615,7 @@ def create_app():
                                                 "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
+                                                "model_name": getattr(p, "model_name", None),  # 添加模型名称
                                                 "last_action": action.action_type.name if p.id == action.player_id else None,
                                                 "last_amount": action.amount if p.id == action.player_id else None
                                             }
