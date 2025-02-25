@@ -1,43 +1,45 @@
 # AI玩家配置
 ai_players:
   ai_1:
-    model: "openai/gpt-4o"
-    api_key: "your api key"
-    base_url: "your base url"
-    temperature: 0.8
-    max_tokens: 10000
-    timeout: 15
-    description: ""
+    model: "openrouter/openai/o3-minixxx"
+    api_key: "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"
+    base_url: "https://openrouter.ai/api/v1"
+    temperature: 0.5
+    max_tokens: 8000
+    timeout: 30
+    description: "擅长使用策略和心理战术"
     
   ai_2:
-    model: "openai/glm-4-plus"
-    api_key: "your api key"
-    base_url: "your base url"
+    model: "openai/deepseek-v3xxxx"
+    api_key: "sk-c35f8f8afc75416daeaa412d96543299"
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.5
-    max_tokens: 15000
-    timeout: 15
-    description: ""
+    max_tokens: 8000
+    timeout: 30
+    description: "擅长使用策略和心理战术"
   
   ai_3:
-    model: "openai/gpt-4o"
-    api_key: "your api key"
-    base_url: "your base url"
+    model: "openrouter/anthropic/claude-3.7-sonnetxxxx"
+    api_key: "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"
+    base_url: "https://openrouter.ai/api/v1"
     temperature: 0.5
-    max_tokens: 15000
-    timeout: 5
+    max_tokens: 8000
+    timeout: 30
+    description: "擅长使用策略和心理战术"
   
   ai_4:
-    model: "openai/qwen-max"
-    api_key: "your api key"
-    base_url: "your base url"
+    model: "openai/qwen-maxxxxx"
+    api_key: "sk-c35f8f8afc75416daeaa412d96543299"
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.5
-    max_tokens: 15000
-    timeout: 5
+    max_tokens: 8000
+    timeout: 30
+    description: "擅长使用策略和心理战术"
 # 提示词模板
 prompts:
   # 决策制定提示词
   decision_making: |
-    你是一个德州扑克AI玩家。{historical_context}。请根据当前游戏状态和历史信息，按照你的性格特征做出决策。
+    你是一个德州扑克玩家。{historical_context}。请根据当前游戏状态和历史信息，按照你的性格特征做出决策。
     
     游戏规则说明:
     1. 可用动作类型:
@@ -98,7 +100,7 @@ prompts:
         "opponent_reads": ["对手行为分析"]
       }},
       "table_talk": {{
-        "message": "发言内容",
+        "message": "对其他玩家的发言内容",
         "tone": "发言语气"
       }}
     }}

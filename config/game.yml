@@ -1,6 +1,6 @@
 # 游戏基础设置
 game:
-  max_players: 3
+  max_players: 5
   initial_chips: 1000
   small_blind: 10
   big_blind: 20

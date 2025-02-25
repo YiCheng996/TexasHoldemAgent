@@ -152,10 +152,16 @@ function handleWebSocketMessage(message) {
         };
         
         // 如果游戏阶段是FINISHED，显示结算弹窗并立即更新UI
-        if (message.phase === 'FINISHED' && message.game_result) {
-            console.log('游戏结束，显示结果');
+        if (message.phase === 'FINISHED') {
+            console.log('游戏结束，检查游戏结果:', message.game_result);
             updateUI();  // 先更新UI以反映最终状态
-            showGameResult(message.game_result);
+            
+            if (message.game_result) {
+                console.log('显示游戏结果:', message.game_result);
+                showGameResult(message.game_result);
+            } else {
+                console.error('游戏结束但没有结果数据');
+            }
             return;
         }
         
@@ -187,6 +193,7 @@ function handleWebSocketMessage(message) {
                 showError(message.message || '发生错误');
                 break;
             case 'game_result':
+                console.log('收到游戏结果消息:', message.data);
                 showGameResult(message.data);
                 break;
             default:
@@ -280,7 +287,7 @@ function updatePlayers() {
                 ${player.is_all_in ? '<div class="player-all-in">全下</div>' : ''}
             </div>
             <div class="cards">
-                ${player.id === 'player_0' && player.cards ? 
+                ${player.cards && player.cards.length > 0 ? 
                     player.cards.map(card => createCardHTML(card)).join('') :
                     '<div class="card-placeholder">?</div><div class="card-placeholder">?</div>'
                 }
@@ -558,6 +565,12 @@ function getHandRankText(handRank) {
 function showGameResult(result) {
     try {
         console.log('显示游戏结果:', result);
+        
+        if (!result) {
+            console.error('游戏结果为空');
+            return;
+        }
+        
         const resultDialog = document.getElementById('result-dialog');
         const resultMessage = document.getElementById('result-message');
         
@@ -566,6 +579,12 @@ function showGameResult(result) {
                 resultDialog: !!resultDialog,
                 resultMessage: !!resultMessage
             });
+            return;
+        }
+        
+        // 检查结果数据完整性
+        if (!result.winner_id) {
+            console.error('游戏结果缺少获胜者ID:', result);
             return;
         }
         
@@ -594,7 +613,13 @@ function showGameResult(result) {
                 <h4>玩家手牌</h4>`;
                 
             // 遍历每个玩家的摊牌数据
-            message += result.showdown_data.map(player => `
+            message += result.showdown_data.map(player => {
+                if (!player || !player.player_id) {
+                    console.error('摊牌数据中有无效玩家:', player);
+                    return '';
+                }
+                
+                return `
                 <div class="player-hand ${player.is_winner ? 'winner' : ''}">
                     <div class="player-info">
                         <span>${player.player_id === 'player_0' ? '我' : getPlayerDisplayName(player.player_id)}</span>
@@ -604,10 +629,14 @@ function showGameResult(result) {
                         }
                     </div>
                     <div class="cards">
-                        ${player.hole_cards.map(card => createCardHTML(card)).join('')}
+                        ${player.hole_cards && player.hole_cards.length > 0 ? 
+                            player.hole_cards.map(card => createCardHTML(card)).join('') : 
+                            '<div class="card-placeholder">无牌</div>'
+                        }
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             
             message += `</div>`;
         }
@@ -623,7 +652,7 @@ function showGameResult(result) {
         
     } catch (error) {
         console.error('显示游戏结果时出错:', error);
-        showError('显示游戏结果时出错');
+        showError('显示游戏结果时出错: ' + error.message);
     }
 }
 
@@ -659,24 +688,102 @@ function getStatusMessage() {
         '等待其他玩家行动...';
 }
 
+// 创建卡牌HTML
 function createCardHTML(card) {
-    if (!card) return '<div class="card-placeholder">?</div>';
-    
-    const rank = card.slice(0, -1);
-    const suit = card.slice(-1);
-    const suitClass = {
-        '♥': 'hearts',
-        '♦': 'diamonds',
-        '♠': 'spades',
-        '♣': 'clubs'
-    }[suit];
-    
-    return `
-        <div class="card">
-            <div class="card-rank">${rank}</div>
-            <div class="card-suit ${suitClass}">${suit}</div>
-        </div>
-    `;
+    try {
+        if (!card) {
+            console.error('卡牌数据为空');
+            return '<div class="card card-unknown">?</div>';
+        }
+        
+        // 处理不同的卡牌格式
+        let suit, rank;
+        
+        if (typeof card === 'string') {
+            // 如果是字符串格式 (例如 "AS" 或 "A♠")
+            rank = card.charAt(0);
+            
+            // 检查是否为Unicode花色符号
+            if (card.length > 1) {
+                if (['♠', '♥', '♦', '♣'].includes(card.charAt(1))) {
+                    suit = card.charAt(1);
+                } else {
+                    suit = card.charAt(1);
+                }
+            } else {
+                suit = '?';
+            }
+        } else if (card.suit !== undefined && card.rank !== undefined) {
+            // 如果是对象格式 (例如 {suit: "S", rank: "A"})
+            suit = card.suit;
+            rank = card.rank;
+        } else if (card.to_string) {
+            // 如果有to_string方法
+            const cardStr = card.to_string();
+            rank = cardStr.charAt(0);
+            suit = cardStr.charAt(1);
+        } else {
+            console.error('无法识别的卡牌格式:', card);
+            return '<div class="card card-unknown">?</div>';
+        }
+        
+        // 处理长度为2以上的牌面值（如"10"）
+        if (rank === '1' && typeof card === 'string' && card.length >= 3) {
+            rank = '10';
+            // 调整花色的位置
+            if (['♠', '♥', '♦', '♣'].includes(card.charAt(2))) {
+                suit = card.charAt(2);
+            } else {
+                suit = card.charAt(2);
+            }
+        }
+        
+        // 转换花色为符号（如果不是已经是符号）
+        let suitSymbol;
+        if (['♠', '♥', '♦', '♣'].includes(suit)) {
+            suitSymbol = suit; // 已经是Unicode符号，直接使用
+        } else {
+            // 如果是字母，转换为符号
+            switch (suit.toUpperCase()) {
+                case 'S': suitSymbol = '♠'; break;
+                case 'H': suitSymbol = '♥'; break;
+                case 'D': suitSymbol = '♦'; break;
+                case 'C': suitSymbol = '♣'; break;
+                default: suitSymbol = suit;
+            }
+        }
+        
+        // 转换数字牌为正确显示
+        let rankDisplay;
+        switch (rank.toUpperCase()) {
+            case 'T': rankDisplay = '10'; break;
+            case 'J': rankDisplay = 'J'; break;
+            case 'Q': rankDisplay = 'Q'; break;
+            case 'K': rankDisplay = 'K'; break;
+            case 'A': rankDisplay = 'A'; break;
+            default: rankDisplay = rank;
+        }
+        
+        // 确定花色颜色
+        const isRed = suitSymbol === '♥' || suitSymbol === '♦';
+        const colorClass = isRed ? 'card-red' : 'card-black';
+        
+        // 添加花色特定类，用于CSS样式
+        let suitClass = '';
+        if (suitSymbol === '♠') suitClass = 'spades';
+        else if (suitSymbol === '♥') suitClass = 'hearts';
+        else if (suitSymbol === '♦') suitClass = 'diamonds';
+        else if (suitSymbol === '♣') suitClass = 'clubs';
+        
+        // 返回卡牌HTML，将花色添加到data-suit属性中
+        return `<div class="card ${colorClass}">
+            <div class="card-rank" data-suit="${suitSymbol}">${rankDisplay}</div>
+            <div class="card-suit ${suitClass}">${suitSymbol}</div>
+        </div>`;
+    } catch (error) {
+        console.error('创建卡牌HTML时出错:', error, '卡牌数据:', card);
+        return '<div class="card card-unknown">?</div>';
+    }
 }
 
 // 初始化游戏
@@ -903,6 +1010,8 @@ function updatePlayersDisplay() {
 
 // 更新游戏状态的函数
 function updateGameState(data) {
+    console.log('收到游戏状态更新:', data);
+    
     if (data.state) {
         gameState = {
             ...gameState,
@@ -922,7 +1031,33 @@ function updateGameState(data) {
         
         // 如果游戏结束，显示结果
         if (data.state.phase === 'FINISHED' && data.state.game_result) {
+            console.log('游戏结束，显示结果:', data.state.game_result);
             showGameResult(data.state.game_result);
+        }
+        
+        updateUI();
+    } else {
+        // 直接处理没有state包装的数据
+        gameState = {
+            ...gameState,
+            phase: data.phase,
+            potSize: data.pot_size,
+            communityCards: data.community_cards,
+            currentPlayer: data.current_player,
+            minRaise: data.min_raise,
+            maxRaise: data.max_raise,
+            players: data.players.map(player => ({
+                ...player,
+                currentBet: player.current_bet,
+                isActive: player.is_active,
+                isAllIn: player.is_all_in
+            }))
+        };
+        
+        // 如果游戏结束，显示结果
+        if (data.phase === 'FINISHED' && data.game_result) {
+            console.log('游戏结束，显示结果:', data.game_result);
+            showGameResult(data.game_result);
         }
         
         updateUI();

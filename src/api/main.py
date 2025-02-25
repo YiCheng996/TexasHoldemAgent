@@ -77,7 +77,7 @@ class CustomJSONEncoder(json.JSONEncoder):
                 "chips": obj.chips,
                 "is_active": obj.is_active,
                 "current_bet": obj.current_bet,
-                "cards": obj.cards if obj.id.startswith("player_") else []
+                "cards": obj.cards,
             }
         return super().default(obj)
 
@@ -300,7 +300,7 @@ async def handle_action(game_id: str, action: PlayerAction):
                         "current_bet": p.current_bet,
                         "is_active": p.is_active,
                         "is_all_in": p.is_all_in,
-                        "cards": p.cards if p.id == action.player_id else [],
+                        "cards": p.cards,
                         "position": p.position
                     }
                     for p in game.state.players.values()
@@ -465,7 +465,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str):
                                 "current_bet": p.current_bet,
                                 "is_active": p.is_active,
                                 "is_all_in": p.is_all_in,
-                                "cards": p.cards if p.id == "player_0" else [],
+                                "cards": p.cards,
                                 "position": p.position
                             }
                             for p in game.state.players.values()

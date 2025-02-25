@@ -137,32 +137,71 @@ main {
     width: 50px;
     height: 70px;
     background-color: white;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     padding: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    position: relative;
+    border: 1px solid #ddd;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.4);
 }
 
 .card-rank {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #000;
+    position: absolute;
+    top: 2px;
+    left: 4px;
 }
 
 .card-suit {
-    font-size: 1.5rem;
+    font-size: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.card-suit.hearts, .card-suit.diamonds {
+/* 红色花色（红心和方块）*/
+.card-red .card-rank,
+.card-red .card-suit,
+.card-suit.hearts, 
+.card-suit.diamonds {
     color: #e74c3c;
 }
 
-.card-suit.spades, .card-suit.clubs {
+/* 黑色花色（黑桃和梅花）*/
+.card-black .card-rank,
+.card-black .card-suit,
+.card-suit.spades, 
+.card-suit.clubs {
     color: #2c3e50;
 }
+
+/* 增加小花色在右下角
+.card-rank::after {
+    content: attr(data-suit);
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: -45px;
+    right: -40px;
+}
+
+.card-red .card-rank::after {
+    color: #e74c3c;
+}
+
+.card-black .card-rank::after {
+    color: #2c3e50;
+} */
 
 .card-placeholder {
     width: 50px;
@@ -807,6 +846,13 @@ function calculatePlayerPositions(numPlayers) {
     width: 40px;
     height: 56px;
     padding: 3px;
+    border-radius: 4px;
+    transition: none;
+}
+
+.game-result .card:hover {
+    transform: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 
 .game-result .card-rank {
@@ -814,5 +860,11 @@ function calculatePlayerPositions(numPlayers) {
 }
 
 .game-result .card-suit {
-    font-size: 1.2rem;
-} 
+    font-size: 1.5rem;
+}
+
+/* .game-result .card-rank::after {
+    font-size: 0.6rem;
+    bottom: -36px;
+    right: -32px;
+}  */

@@ -21,8 +21,8 @@ sys.path.append(str(root_dir))
 
 from src.utils.logger import get_logger
 from src.utils.config import load_config
-from src.engine.game import TexasHoldemGame, GamePhase, ActionType, PlayerAction
-from src.engine.state import GameState, PlayerState
+from src.engine.game import TexasHoldemGame, ActionType, PlayerAction
+from src.engine.state import GameState, PlayerState, GameStage
 from src.agents.base import GameObservation
 
 logger = get_logger(__name__)
@@ -194,7 +194,7 @@ def create_app():
                 raise HTTPException(status_code=404, detail="游戏不存在")
             
             state = {
-                "phase": game.state.phase,
+                "phase": game.phase.name,
                 "pot_size": game.state.pot,
                 "community_cards": game.state.community_cards,
                 "current_player": game.state.current_player,
@@ -211,7 +211,7 @@ def create_app():
                     "chips": player.chips,
                     "current_bet": player.current_bet,
                     "is_active": player.is_active,
-                    "cards": list(player.cards) if player.id == "player_0" else [],  # 将元组转换为列表
+                    "cards": list(player.cards),  # 将元组转换为列表，并始终返回手牌
                     "is_all_in": player.is_all_in,
                     "position": player.position,
                     "model_name": getattr(player, "model_name", None)  # 添加模型名称
@@ -233,7 +233,7 @@ def create_app():
             
         try:
             # 检查游戏状态
-            if game.phase == GamePhase.FINISHED:
+            if game.phase == GameStage.FINISHED:
                 raise HTTPException(
                     status_code=400,
                     detail="Game is finished. Please start a new game."
@@ -296,7 +296,7 @@ def create_app():
                         "chips": p.chips,
                         "current_bet": p.current_bet,
                         "is_active": p.is_active,
-                        "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                        "cards": p.cards,  # 始终返回所有玩家的手牌
                         "is_all_in": p.is_all_in,
                         "position": p.position,
                         "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -309,7 +309,43 @@ def create_app():
             
             logger.info(f"发送更新后的游戏状态: {updated_state}")
             
-            # 直接返回更新后的状态，不使用WebSocket发送
+            # 检查是否需要进入下一阶段
+            if game.is_round_complete():
+                logger.info("回合结束，进入下一阶段")
+                game.next_phase()
+                # 更新并发送新的游戏状态
+                updated_state = {
+                    "phase": game.phase.name,
+                    "pot_size": game.state.pot,
+                    "community_cards": game.state.community_cards,
+                    "current_player": game.state.current_player,
+                    "min_raise": game.state.min_raise,
+                    "max_raise": game.state.max_raise,
+                    "game_result": game.state.game_result,  # 确保包含游戏结果
+                    "players": [
+                        {
+                            "id": p.id,
+                            "chips": p.chips,
+                            "current_bet": p.current_bet,
+                            "is_active": p.is_active,
+                            "cards": p.cards,  # 始终返回所有玩家的手牌
+                            "is_all_in": p.is_all_in,
+                            "position": p.position,
+                            "model_name": getattr(p, "model_name", None),  # 添加模型名称
+                            "last_action": player_action.action_type.name if p.id == player_action.player_id else None,
+                            "last_amount": player_action.amount if p.id == player_action.player_id else None
+                        }
+                        for p in game.state.players.values()
+                    ]
+                }
+                
+                # 如果游戏已结束，确保包含完整的游戏结果
+                if game.state.is_game_over and game.state.game_result:
+                    logger.info(f"游戏已结束，发送游戏结果: {game.state.game_result}")
+                
+                logger.info(f"游戏进入新阶段: {game.phase.name}")
+                await manager.send_game_state(game_id, updated_state)
+            
             return updated_state
             
         except Exception as e:
@@ -324,7 +360,7 @@ def create_app():
             if not game:
                 raise HTTPException(status_code=404, detail="Game not found")
             
-            if game.phase != GamePhase.FINISHED:
+            if game.phase != GameStage.FINISHED:
                 raise HTTPException(status_code=400, detail="Game is not finished")
             
             # 开始新的一局
@@ -346,7 +382,7 @@ def create_app():
                             "chips": p.chips,
                             "current_bet": p.current_bet,
                             "is_active": p.is_active,
-                            "cards": p.cards if p.id == "player_0" else [],
+                            "cards": p.cards,  # 始终返回所有玩家的手牌
                             "is_all_in": p.is_all_in,
                             "position": p.position,
                             "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -404,7 +440,7 @@ def create_app():
                         "chips": player_state.chips,
                         "current_bet": player_state.current_bet,
                         "is_active": player_state.is_active,
-                        "cards": player_state.cards if player_id == "player_0" else [],
+                        "cards": player_state.cards,  # 始终返回所有玩家的手牌
                         "is_all_in": player_state.is_all_in,
                         "position": player_state.position,
                         "model_name": getattr(player_state, "model_name", None),  # 添加模型名称
@@ -474,7 +510,7 @@ def create_app():
                                     "phase": game.phase.name,
                                     "pot_size": game.state.pot,
                                     "community_cards": game.state.community_cards,
-                                    "current_player": game.state.current_player,
+                                    "current_player": game.state.current_player,  # 确保使用游戏引擎中的当前玩家
                                     "min_raise": game.state.min_raise,
                                     "max_raise": game.state.max_raise,
                                     "game_result": game.state.game_result,
@@ -484,7 +520,7 @@ def create_app():
                                             "chips": p.chips,
                                             "current_bet": p.current_bet,
                                             "is_active": p.is_active,
-                                            "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                                            "cards": p.cards,  # 始终返回所有玩家的手牌
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
                                             "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -515,14 +551,14 @@ def create_app():
                                         "current_player": game.state.current_player,
                                         "min_raise": game.state.min_raise,
                                         "max_raise": game.state.max_raise,
-                                        "game_result": game.state.game_result,
+                                        "game_result": game.state.game_result,  # 确保包含游戏结果
                                         "players": [
                                             {
                                                 "id": p.id,
                                                 "chips": p.chips,
                                                 "current_bet": p.current_bet,
                                                 "is_active": p.is_active,
-                                                "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                                                "cards": p.cards,  # 始终返回所有玩家的手牌
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
                                                 "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -532,6 +568,11 @@ def create_app():
                                             for p in game.state.players.values()
                                         ]
                                     }
+                                    
+                                    # 如果游戏已结束，确保包含完整的游戏结果
+                                    if game.state.is_game_over and game.state.game_result:
+                                        logger.info(f"游戏已结束，发送游戏结果: {game.state.game_result}")
+                                    
                                     logger.info(f"游戏进入新阶段: {game.phase.name}")
                                     await manager.send_game_state(game_id, updated_state)
                                 
@@ -575,7 +616,7 @@ def create_app():
                                             "chips": p.chips,
                                             "current_bet": p.current_bet,
                                             "is_active": p.is_active,
-                                            "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                                            "cards": p.cards,  # 始终返回所有玩家的手牌
                                             "is_all_in": p.is_all_in,
                                             "position": p.position,
                                             "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -605,14 +646,14 @@ def create_app():
                                         "current_player": game.state.current_player,
                                         "min_raise": game.state.min_raise,
                                         "max_raise": game.state.max_raise,
-                                        "game_result": game.state.game_result,
+                                        "game_result": game.state.game_result,  # 确保包含游戏结果
                                         "players": [
                                             {
                                                 "id": p.id,
                                                 "chips": p.chips,
                                                 "current_bet": p.current_bet,
                                                 "is_active": p.is_active,
-                                                "cards": p.cards if p.id == "player_0" or game.phase == GamePhase.FINISHED else [],
+                                                "cards": p.cards,  # 始终返回所有玩家的手牌
                                                 "is_all_in": p.is_all_in,
                                                 "position": p.position,
                                                 "model_name": getattr(p, "model_name", None),  # 添加模型名称
@@ -622,6 +663,11 @@ def create_app():
                                             for p in game.state.players.values()
                                         ]
                                     }
+                                    
+                                    # 如果游戏已结束，确保包含完整的游戏结果
+                                    if game.state.is_game_over and game.state.game_result:
+                                        logger.info(f"游戏已结束，发送游戏结果: {game.state.game_result}")
+                                    
                                     logger.info(f"游戏进入新阶段: {game.phase.name}")
                                     await manager.send_game_state(game_id, updated_state)
                                 

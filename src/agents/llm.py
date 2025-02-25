@@ -67,7 +67,7 @@ class LLMAgent(Agent):
             
         # 初始化重试次数
         retry_count = 0
-        max_retries = 3
+        max_retries = 1
         last_error = None
         
         while retry_count < max_retries:
@@ -120,7 +120,7 @@ class LLMAgent(Agent):
         logger.error(f"达到最大重试次数，选择弃牌。最后一次错误: {last_error}")
         return PlayerAction(
             player_id=self.agent_id,
-            action_type=ActionType.FOLD,
+            action_type=ActionType.CALL,
             amount=0,
             timestamp=datetime.now()
         )
@@ -226,6 +226,10 @@ class LLMAgent(Agent):
     
     def _call_llm(self, prompt: str) -> str:
         """调用LLM"""
+        # # 开启调试模式
+        # import litellm
+        # litellm._turn_on_debug()
+        
         try:
             # 记录请求内容
             logger.info("\n" + "="*50)
@@ -252,7 +256,10 @@ class LLMAgent(Agent):
             return response_content
             
         except Exception as e:
+            # 增强错误日志
             logger.error(f"❌ LLM调用失败: {e}")
+            if hasattr(e, 'response') and hasattr(e.response, 'text'):
+                logger.error(f"详细错误: {e.response.text}")
             raise
     
     def _parse_response(self, response: str) -> Dict[str, Any]:

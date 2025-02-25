@@ -15,6 +15,7 @@ logger = get_logger(__name__)
 class GameStage(Enum):
     """游戏阶段枚举"""
     WAITING = auto()    # 等待开始
+    DEALING = auto()    # 发牌阶段
     PRE_FLOP = auto()   # 翻牌前
     FLOP = auto()       # 翻牌
     TURN = auto()       # 转牌
@@ -61,11 +62,12 @@ class GameState:
         self.current_bet: int = 0
         self.min_raise: int = 0
         self.max_raise: int = 0  # 添加最大加注额
-        self.phase: str = "WAITING"
+        self.phase = GameStage.WAITING
         self.current_player: Optional[str] = None
         self.game_result: Optional[Dict] = None  # 添加游戏结果字段
         self.round_actions: List[PlayerAction] = []  # 当前回合的动作历史
         self.game_actions: List[PlayerAction] = []   # 整局游戏的动作历史
+        self.is_game_over: bool = False  # 添加游戏是否结束标志
         
         logger.info("游戏状态已初始化")
         
@@ -146,7 +148,10 @@ class GameState:
         player.total_bet += actual_amount  # 更新总下注
         self.pot += actual_amount  # 将跟注金额加入底池
         
-        logger.info(f"玩家 {player_id} 跟注 {actual_amount} 筹码")
+        # 标记玩家已行动
+        player.has_acted = True
+        
+        logger.info(f"玩家 {player_id} 跟注 {actual_amount} 筹码，已标记为已行动")
         
     def raise_bet(self, player_id: str, amount: int) -> None:
         """
@@ -173,7 +178,10 @@ class GameState:
         player.total_bet += actual_amount  # 更新总下注
         self.pot += actual_amount  # 将加注金额加入底池
         
-        logger.info(f"玩家 {player_id} 加注到 {total_amount} 筹码")
+        # 标记玩家已行动
+        player.has_acted = True
+        
+        logger.info(f"玩家 {player_id} 加注到 {total_amount} 筹码，已标记为已行动")
         
     def all_in(self, player_id: str) -> None:
         """
@@ -191,6 +199,9 @@ class GameState:
         player.total_bet += amount  # 更新总下注
         player.is_all_in = True
         
+        # 标记玩家已行动
+        player.has_acted = True
+        
         # 更新底池
         self.pot += amount
         
@@ -198,7 +209,7 @@ class GameState:
         if player.current_bet > self.min_raise:
             self.min_raise = player.current_bet
             
-        logger.info(f"Player {player_id} went all-in with {amount} chips")
+        logger.info(f"玩家 {player_id} 全下 {amount} 筹码，已标记为已行动")
         
     def reset_bets(self) -> None:
         """重置所有玩家的下注"""
@@ -224,20 +235,28 @@ class GameState:
     
     def reset_round(self) -> None:
         """重置回合状态"""
-        # 只有在开始新游戏时才重置玩家状态
-        if self.phase != "FINISHED":
-            for player in self.players.values():
-                player.has_acted = False
-                player.current_bet = 0
-                player.is_active = True  # 重新激活玩家
+        # 重置所有玩家状态
+        for player in self.players.values():
+            player.has_acted = False
+            player.current_bet = 0
+            player.total_bet = 0  # 重置本局总下注
+            player.is_active = True  # 重新激活玩家
+            player.is_all_in = False  # 重置全下状态
+            player.cards = []  # 清空手牌
         
+        # 重置游戏状态
         self.pot = 0
         self.community_cards = []
         self.current_bet = 0
         self.min_raise = 0
         self.max_raise = 0
         self.round_actions = []
-        logger.info("回合状态已重置")
+        self.game_actions = []  # 重置游戏动作历史
+        self.game_result = None  # 重置游戏结果
+        self.is_game_over = False  # 重置游戏结束标志
+        self.current_player = None  # 重置当前玩家
+        
+        logger.info("游戏状态已完全重置，准备开始新局")
     
     def set_player_cards(self, player_id: str, cards: List[str]) -> None:
         """
@@ -424,6 +443,7 @@ class GameState:
         """
         stage_order = [
             GameStage.WAITING,
+            GameStage.DEALING,
             GameStage.PRE_FLOP,
             GameStage.FLOP,
             GameStage.TURN,
@@ -457,7 +477,7 @@ class GameState:
                 {
                     "id": player.id,
                     "chips": player.chips,
-                    "cards": player.cards if player.id == "player_0" else [],
+                    "cards": player.cards,
                     "current_bet": player.current_bet,
                     "total_bet": player.total_bet,  # 添加总下注
                     "is_active": player.is_active,
@@ -471,7 +491,7 @@ class GameState:
             "current_bet": self.current_bet,
             "min_raise": self.min_raise,
             "max_raise": self.max_raise,
-            "phase": self.phase,
+            "phase": self.phase.name,
             "current_player": self.current_player
         }
 
