@@ -381,7 +381,14 @@ class GameState:
             return True
             
         # 检查所有活跃玩家是否都已行动
-        if not all(p.has_acted for p in active_players):
+        all_players_acted = True
+        for player in active_players:
+            # 注意：全下的玩家已经行动了，不需要再检查
+            if not player.has_acted and not player.is_all_in:
+                all_players_acted = False
+                break
+                
+        if not all_players_acted:
             return False
             
         # 获取当前最大下注

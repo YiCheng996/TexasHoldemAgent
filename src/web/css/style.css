@@ -270,6 +270,14 @@ main {
 
 .player-seat.inactive {
     opacity: 0.5;
+    filter: grayscale(100%);
+    pointer-events: none;  /* 禁用交互 */
+}
+
+/* 筹码为0的玩家特殊样式 */
+.player-seat.inactive .player-chips {
+    color: #cc0000;  /* 红色显示筹码为0 */
+    font-weight: bold;
 }
 
 .player-info {
@@ -435,6 +443,22 @@ main {
 .btn-raise {
     background-color: #f1c40f;
     color: black;
+}
+
+.btn-all-in {
+    background-color: #cc0000;
+    color: white;
+}
+
+.btn-all-in.highlight {
+    animation: pulse-highlight 1.5s infinite;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+@keyframes pulse-highlight {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 button:disabled {

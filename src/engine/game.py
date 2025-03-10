@@ -295,6 +295,12 @@ class TexasHoldemGame:
             logger.info("游戏已结束，不进入下一阶段")
             return
         
+        # 检查所有玩家的筹码，将筹码为0的玩家设为不活跃
+        for player_id, player in self.state.players.items():
+            if player.chips == 0 and not player.is_all_in:
+                player.is_active = False
+                logger.info(f"玩家 {player_id} 筹码为0，设置为不活跃状态")
+        
         # 重置所有活跃玩家的状态
         active_players = self.state.get_active_players()
         logger.info(f"活跃玩家数量: {len(active_players)}, 玩家ID: {[p.id for p in active_players]}")
@@ -556,6 +562,10 @@ class TexasHoldemGame:
         elif action.action_type == ActionType.RAISE:
             self.state.raise_bet(current_player.id, action.amount)
             logger.info(f"玩家 {current_player.id} 加注到 {action.amount}")
+            
+        elif action.action_type == ActionType.ALL_IN:
+            self.state.all_in(current_player.id)
+            logger.info(f"玩家 {current_player.id} 全下")
         
         # 记录行动
         self.state.add_action(action)
@@ -734,7 +744,14 @@ class TexasHoldemGame:
             player.has_acted = False
             player.current_bet = 0
             player.total_bet = 0
-            player.is_active = True  # 重新激活所有玩家
+            
+            # 只有筹码大于0的玩家才重新激活
+            if player.chips > 0:
+                player.is_active = True  # 重新激活玩家
+            else:
+                player.is_active = False  # 筹码为0的玩家保持不活跃状态
+                logger.info(f"玩家 {player.id} 筹码为0，保持不活跃状态")
+                
             player.is_all_in = False
             player.cards = []  # 清空手牌
         

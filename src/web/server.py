@@ -70,6 +70,13 @@ class WebSocketManager:
             except WebSocketDisconnect:
                 self.disconnect(game_id)
                 logger.error(f"发送游戏状态时连接断开: {game_id}")
+            except RuntimeError as e:
+                if "after sending 'websocket.close'" in str(e):
+                    # 连接已关闭，从活动连接中移除
+                    self.disconnect(game_id)
+                    logger.error(f"连接已关闭，无法发送游戏状态: {game_id}")
+                else:
+                    logger.error(f"发送游戏状态时出错: {str(e)}")
             except Exception as e:
                 logger.error(f"发送游戏状态时出错: {str(e)}")
 

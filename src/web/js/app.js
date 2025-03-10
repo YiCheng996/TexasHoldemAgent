@@ -25,7 +25,8 @@ const elements = {
     actionPanel: document.getElementById('action-panel'),
     statusMessage: document.getElementById('status-message'),
     raiseDialog: document.getElementById('raise-dialog'),
-    raiseAmount: document.getElementById('raise-amount')
+    raiseAmount: document.getElementById('raise-amount'),
+    allInButton: document.querySelector('.btn-all-in')
 };
 
 // 检查DOM元素是否存在
@@ -270,6 +271,13 @@ function updatePlayers() {
         const seat = document.createElement('div');
         seat.className = `player-seat ${player.id === gameState.currentPlayer ? 'active' : ''} ${!player.isActive ? 'inactive' : ''}`;
         
+        // 检查玩家是否已输掉所有筹码（筹码为0）
+        if (player.chips === 0 && !player.isAllIn) {
+            seat.classList.add('inactive');
+            player.isActive = false; // 更新玩家状态为不活跃
+            console.log(`玩家 ${player.id} 已输掉所有筹码，设置为不活跃状态`);
+        }
+        
         // 设置位置样式
         const position = positions[index];
         seat.style.cssText = position;
@@ -352,10 +360,28 @@ function updateActionPanel() {
         const checkButton = elements.actionPanel.querySelector('.btn-check');
         const callButton = elements.actionPanel.querySelector('.btn-call');
         const raiseButton = elements.actionPanel.querySelector('.btn-raise');
+        const allInButton = elements.actionPanel.querySelector('.btn-all-in');
         
         checkButton.disabled = maxBet > currentPlayer.currentBet;
         callButton.disabled = maxBet === currentPlayer.currentBet;
+        
+        // 如果玩家筹码不够跟注，禁用跟注按钮
+        if (currentPlayer.chips < (maxBet - currentPlayer.currentBet)) {
+            callButton.disabled = true;
+        }
+        
+        // 玩家筹码不足以满足最小加注要求时，禁用加注按钮
         raiseButton.disabled = currentPlayer.chips <= maxBet - currentPlayer.currentBet;
+        
+        // 全下按钮只有在玩家有筹码时才可用
+        allInButton.disabled = currentPlayer.chips <= 0;
+        
+        // 全下按钮样式设置 - 当筹码很少时突出显示
+        if (currentPlayer.chips > 0 && currentPlayer.chips <= (maxBet - currentPlayer.currentBet)) {
+            allInButton.classList.add('highlight');
+        } else {
+            allInButton.classList.remove('highlight');
+        }
     }
 }
 
@@ -981,6 +1007,13 @@ function updatePlayersDisplay() {
         // 添加玩家是否激活的状态
         if (!player.isActive) {
             playerDiv.classList.add('inactive');
+        }
+        
+        // 检查玩家是否已输掉所有筹码（筹码为0）
+        if (player.chips === 0 && !player.isAllIn) {
+            playerDiv.classList.add('inactive');
+            player.isActive = false; // 更新玩家状态为不活跃
+            console.log(`玩家 ${player.id} 已输掉所有筹码，设置为不活跃状态`);
         }
         
         // 构建玩家信息HTML
