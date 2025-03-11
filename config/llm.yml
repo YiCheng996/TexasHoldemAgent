@@ -2,7 +2,7 @@
 ai_players:
   ai_1:
     model: "openrouter/openai/o3-minixxx"
-    api_key: "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"
+    api_key: "key"
     base_url: "https://openrouter.ai/api/v1"
     temperature: 0.5
     max_tokens: 8000
@@ -11,7 +11,7 @@ ai_players:
     
   ai_2:
     model: "openai/deepseek-v3xxxx"
-    api_key: "sk-c35f8f8afc75416daeaa412d96543299"
+    api_key: "key"
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.5
     max_tokens: 8000
@@ -20,7 +20,7 @@ ai_players:
   
   ai_3:
     model: "openrouter/anthropic/claude-3.7-sonnetxxxx"
-    api_key: "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"
+    api_key: "key"
     base_url: "https://openrouter.ai/api/v1"
     temperature: 0.5
     max_tokens: 8000
@@ -29,7 +29,7 @@ ai_players:
   
   ai_4:
     model: "openai/qwen-maxxxxx"
-    api_key: "sk-c35f8f8afc75416daeaa412d96543299"
+    api_key: "key"
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.5
     max_tokens: 8000
